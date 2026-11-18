@@ -1,58 +1,63 @@
-/* ─── 14-60 Pizzas Caseras · WebApp Mobile-First Estilo PedidosYa ─────────── */
+/* ─── Tamarindo · WebApp Mobile-First de pedidos ───────────────── */
 
 :root,
 html[data-theme="light"] {
-  --red: #e51937;
-  --red-bright: #ff1f40;
-  --red-soft: rgba(229, 25, 55, 0.1);
-  --gold: #f59e0b;
-  --gold-bright: #fcaf15;
-  --gold-soft: rgba(245, 158, 11, 0.15);
-  --green: #0ca678;
-  --green-soft: rgba(12, 166, 120, 0.12);
-  --bg: #f4f5f8;
-  --bg-2: #ebedf3;
-  --surface: #ffffff;
-  --surface-2: #f8f9fc;
-  --surface-3: #eff1f6;
-  --text: #18181b;
-  --text-soft: #3f3f46;
-  --muted: #686b78;
-  --line: rgba(24, 24, 27, 0.08);
-  --line-strong: rgba(24, 24, 27, 0.16);
-  --header-bg: rgba(255, 255, 255, 0.95);
-  --shadow: 0 18px 46px rgba(15, 23, 42, 0.12);
-  --shadow-sm: 0 2px 10px rgba(15, 23, 42, 0.04);
-  --shadow-hover: 0 10px 24px rgba(15, 23, 42, 0.09);
-  --font-display: "Bebas Neue", Impact, sans-serif;
-  --font-body: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Paleta oficial Tamarindo · Branding Opción 4 */
+  --cream: #f6ebe2;
+  --orange: #ec681d;
+  --red: #ec681d;
+  --red-bright: #df1517;
+  --red-soft: rgba(236, 104, 29, 0.12);
+  --gold: #ec681d;
+  --gold-bright: #df1517;
+  --gold-soft: rgba(223, 21, 23, 0.12);
+  --green: #013325;
+  --green-soft: rgba(1, 51, 37, 0.1);
+  --bg: #f6ebe2;
+  --bg-2: #efe0d4;
+  --surface: #fffdfb;
+  --surface-2: #fdf7f2;
+  --surface-3: #f3e8dd;
+  --text: #013325;
+  --text-soft: #2c4c41;
+  --muted: #6d7d76;
+  --line: rgba(1, 51, 37, 0.1);
+  --line-strong: rgba(1, 51, 37, 0.2);
+  --header-bg: rgba(246, 235, 226, 0.95);
+  --shadow: 0 18px 46px rgba(1, 51, 37, 0.14);
+  --shadow-sm: 0 2px 10px rgba(1, 51, 37, 0.06);
+  --shadow-hover: 0 10px 24px rgba(1, 51, 37, 0.12);
+  --font-display: "Covered By Your Grace", "Urbanist", cursive;
+  --font-body: "Urbanist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --header-h: 60px;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 html[data-theme="dark"] {
-  --red: #ff2947;
-  --red-bright: #ff4760;
-  --red-soft: rgba(255, 41, 71, 0.16);
-  --gold: #fbbf24;
-  --gold-bright: #fcd34d;
-  --gold-soft: rgba(251, 191, 36, 0.16);
-  --green: #20c997;
-  --green-soft: rgba(32, 201, 151, 0.16);
-  --bg: #181920;
-  --bg-2: #1f212b;
-  --surface: #242733;
-  --surface-2: #2c303e;
-  --surface-3: #35394a;
-  --text: #f8fafc;
-  --text-soft: #cbd5e1;
-  --muted: #9ca3b5;
-  --line: rgba(255, 255, 255, 0.09);
-  --line-strong: rgba(255, 255, 255, 0.18);
-  --header-bg: rgba(24, 25, 32, 0.94);
-  --shadow: 0 22px 54px rgba(0, 0, 0, 0.42);
-  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.22);
-  --shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.34);
+  --cream: #f6ebe2;
+  --orange: #ec681d;
+  --red: #ec681d;
+  --red-bright: #df1517;
+  --red-soft: rgba(236, 104, 29, 0.2);
+  --gold: #ec681d;
+  --gold-bright: #df1517;
+  --gold-soft: rgba(223, 21, 23, 0.2);
+  --green: #ec681d;
+  --green-soft: rgba(236, 104, 29, 0.18);
+  --bg: #013325;
+  --bg-2: #073f2e;
+  --surface: #0a4734;
+  --surface-2: #0f513c;
+  --surface-3: #155c45;
+  --text: #f6ebe2;
+  --text-soft: #d9ece4;
+  --muted: #a6c1b6;
+  --line: rgba(246, 235, 226, 0.12);
+  --line-strong: rgba(246, 235, 226, 0.22);
+  --header-bg: rgba(1, 51, 37, 0.94);
+  --shadow: 0 22px 54px rgba(1, 51, 37, 0.42);
+  --shadow-sm: 0 4px 14px rgba(1, 51, 37, 0.24);
+  --shadow-hover: 0 12px 28px rgba(1, 51, 37, 0.34);
 }
 
 *,
@@ -164,8 +169,8 @@ h3 {
 
 .btn-primary {
   background: var(--red);
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(229, 25, 55, 0.25);
+  color: #f6ebe2;
+  box-shadow: 0 6px 18px rgba(236, 104, 29, 0.28);
 }
 
 .btn-primary:hover {
@@ -173,9 +178,9 @@ h3 {
 }
 
 .btn-whatsapp {
-  background: #12b886;
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(18, 184, 134, 0.25);
+  background: #013325;
+  color: #f6ebe2;
+  box-shadow: 0 6px 18px rgba(1, 51, 37, 0.28);
 }
 
 .btn-ghost {
@@ -212,18 +217,18 @@ h3 {
 }
 
 .splash-logo {
-  width: 84px;
-  height: 84px;
+  width: 96px;
+  height: 96px;
   object-fit: contain;
   border-radius: 20px;
-  background: #0a0a0c;
-  padding: 6px;
+  background: var(--green);
+  padding: 8px;
 }
 
 .splash-name {
   margin: 10px 0 0;
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 2.8rem;
   line-height: 0.95;
 }
 
@@ -272,16 +277,17 @@ h3 {
   position: sticky;
   top: 0;
   z-index: 120;
-  background: #e51937;
-  color: #ffffff;
+  background: #013325;
+  color: #f6ebe2;
+  border-bottom: 1px solid rgba(236, 104, 29, 0.45);
   transition: background 0.22s var(--ease), box-shadow 0.22s var(--ease);
 }
 
 .app-topbar.is-scrolled {
-  background: rgba(214, 15, 45, 0.96);
+  background: rgba(1, 51, 37, 0.96);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 8px 24px rgba(130, 8, 28, 0.28);
+  box-shadow: 0 8px 24px rgba(1, 51, 37, 0.38);
 }
 
 .topbar-inner {
@@ -300,7 +306,7 @@ h3 {
   padding: 4px 0;
   border: 0;
   background: transparent;
-  color: #ffffff;
+  color: #f6ebe2;
   text-align: left;
   cursor: pointer;
 }
@@ -310,9 +316,9 @@ h3 {
   height: 38px;
   border-radius: 11px;
   object-fit: contain;
-  background: #0d0a0c;
-  padding: 2px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: var(--cream);
+  padding: 3px;
+  border: 1px solid rgba(236, 104, 29, 0.6);
   flex-shrink: 0;
 }
 
@@ -327,7 +333,7 @@ h3 {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #ffffff;
+  color: #f6ebe2;
 }
 
 .location-address strong {
@@ -344,7 +350,7 @@ h3 {
   align-items: center;
   gap: 5px;
   margin-top: 2px;
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(246, 235, 226, 0.88);
   font-size: 0.7rem;
   font-weight: 700;
 }
@@ -353,8 +359,8 @@ h3 {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #4ade80;
-  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+  background: #f6ebe2;
+  box-shadow: 0 0 0 3px rgba(246, 235, 226, 0.3);
 }
 
 .status-dot-sep {
@@ -378,10 +384,10 @@ h3 {
   width: 38px;
   height: 38px;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(246, 235, 226, 0.24);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  background: rgba(246, 235, 226, 0.14);
+  color: #f6ebe2;
   font-size: 0.92rem;
   cursor: pointer;
 }
@@ -393,10 +399,10 @@ h3 {
   gap: 6px;
   height: 38px;
   padding: 0 9px 0 12px;
-  border: 1px solid rgba(255, 255, 255, 0.26);
+  border: 1px solid rgba(246, 235, 226, 0.26);
   border-radius: 999px;
-  background: rgba(18, 8, 12, 0.34);
-  color: #fff;
+  background: rgba(1, 51, 37, 0.28);
+  color: #f6ebe2;
   font-weight: 800;
   font-size: 0.8rem;
   cursor: pointer;
@@ -413,26 +419,45 @@ h3 {
   height: 22px;
   padding: 0 6px;
   border-radius: 999px;
-  background: #ffffff;
+  background: #f6ebe2;
   color: var(--red);
   font-size: 0.72rem;
   font-weight: 800;
 }
 
-/* ─── HERO PRINCIPAL ESTILO PEDIDOSYA CON GAMA 14-60 ─────────────────────── */
+/* ─── HERO PRINCIPAL CON LA PALETA DE TAMARINDO ──────────────────────────── */
 .py-hero-shell {
   position: relative;
   padding: 6px 0 22px;
   border-radius: 0 0 28px 28px;
   background:
-    radial-gradient(circle at 86% 42%, rgba(252, 175, 21, 0.24), transparent 46%),
-    linear-gradient(180deg, #e51937 0%, #c80e2b 38%, #7c0d29 76%, #3f0e26 100%);
-  color: #ffffff;
-  box-shadow: 0 12px 30px rgba(110, 10, 30, 0.18);
+    radial-gradient(circle at 82% 28%, rgba(236, 104, 29, 0.5), transparent 44%),
+    radial-gradient(circle at 6% 100%, rgba(236, 104, 29, 0.24), transparent 52%),
+    linear-gradient(160deg, #013325 0%, #044633 54%, #013325 100%);
+  color: #f6ebe2;
+  box-shadow: 0 12px 30px rgba(1, 51, 37, 0.24);
   overflow: hidden;
 }
 
-/* Buscador píldora blanco con botón circular rojo */
+/* Patrón de personaje + rayo del branding, en una sola tinta */
+.py-hero-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("img/logo/tamarindo-pattern.webp");
+  background-repeat: repeat;
+  background-size: 210px 210px;
+  opacity: 0.14;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.py-hero-shell > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Buscador píldora blanco con botón circular naranja */
 .py-search-pill-wrap {
   margin-bottom: 14px;
 }
@@ -445,8 +470,8 @@ h3 {
   height: 48px;
   padding: 5px 5px 5px 18px;
   border-radius: 999px;
-  background: #ffffff;
-  box-shadow: 0 6px 18px rgba(20, 4, 10, 0.16);
+  background: #f6ebe2;
+  box-shadow: 0 6px 18px rgba(1, 51, 37, 0.16);
 }
 
 .py-search-pill input {
@@ -455,13 +480,13 @@ h3 {
   border: 0;
   outline: 0;
   background: transparent;
-  color: #18181b;
+  color: #013325;
   font-size: 0.92rem;
   font-weight: 500;
 }
 
 .py-search-pill input::placeholder {
-  color: #71717a;
+  color: #6d7d76;
 }
 
 .py-search-submit {
@@ -472,7 +497,7 @@ h3 {
   height: 38px;
   border-radius: 50%;
   background: var(--red);
-  color: #ffffff;
+  color: #f6ebe2;
 }
 
 /* Fila Kicker + Píldora Blanca */
@@ -488,7 +513,7 @@ h3 {
   font-size: 1rem;
   font-weight: 800;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  color: #f6ebe2;
 }
 
 .py-hero-white-pill {
@@ -496,12 +521,12 @@ h3 {
   padding: 5px 12px;
   border: 0;
   border-radius: 999px;
-  background: #ffffff;
-  color: #18181b;
+  background: #f6ebe2;
+  color: #013325;
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: -0.01em;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 4px 12px rgba(1, 51, 37, 0.14);
   cursor: pointer;
 }
 
@@ -518,16 +543,18 @@ h3 {
   margin: 0 0 2px;
   font-size: 0.92rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(246, 235, 226, 0.95);
 }
 
 .py-hero-headline {
   margin: 0 0 6px;
-  font-size: clamp(2.35rem, 9vw, 3.3rem);
-  font-weight: 900;
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: clamp(2.7rem, 10vw, 3.9rem);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: 0;
+  color: #ec681d;
+  text-shadow: 0 3px 14px rgba(1, 51, 37, 0.55);
 }
 
 .py-hero-sub {
@@ -536,7 +563,7 @@ h3 {
   font-size: 0.82rem;
   font-weight: 500;
   line-height: 1.32;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(246, 235, 226, 0.9);
 }
 
 .py-hero-visual {
@@ -551,22 +578,22 @@ h3 {
   height: 138px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(255, 255, 255, 0.28);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
+  border: 3px solid rgba(246, 235, 226, 0.28);
+  box-shadow: 0 14px 28px rgba(1, 51, 37, 0.36);
 }
 
 .py-hero-floating-logo {
   position: absolute;
   right: 2px;
   bottom: -4px;
-  width: 54px;
-  height: 54px;
-  padding: 4px;
+  width: 58px;
+  height: 58px;
+  padding: 5px;
   border-radius: 14px;
-  background: #0d0a0c;
-  border: 2px solid var(--gold-bright);
+  background: var(--cream);
+  border: 2px solid var(--orange);
   object-fit: contain;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 18px rgba(1, 51, 37, 0.4);
 }
 
 /* Fila de tarjetas traslúcidas con insignia en la base del hero */
@@ -585,12 +612,12 @@ h3 {
   justify-content: flex-end;
   min-height: 82px;
   padding: 32px 6px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(246, 235, 226, 0.22);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(246, 235, 226, 0.15);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  color: #ffffff;
+  color: #f6ebe2;
   cursor: pointer;
   transition: transform 0.18s var(--ease), background 0.18s var(--ease), border-color 0.18s var(--ease);
 }
@@ -598,7 +625,7 @@ h3 {
 .py-glass-card:hover,
 .py-glass-card.is-active {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.26);
+  background: rgba(246, 235, 226, 0.26);
   border-color: var(--gold-bright);
 }
 
@@ -614,11 +641,11 @@ h3 {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #ff2a4b, #b80721);
-  border: 2px solid var(--gold-bright);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.28);
+  background: radial-gradient(circle at 30% 30%, #ec681d, #df1517);
+  border: 2px solid var(--cream);
+  box-shadow: 0 5px 12px rgba(1, 51, 37, 0.28);
   line-height: 0.92;
-  color: #ffffff;
+  color: #f6ebe2;
 }
 
 .py-star-badge small {
@@ -637,7 +664,7 @@ h3 {
   font-style: normal;
   font-size: 0.48rem;
   font-weight: 800;
-  color: var(--gold-bright);
+  color: var(--cream);
 }
 
 .py-glass-label {
@@ -645,7 +672,7 @@ h3 {
   font-weight: 800;
   line-height: 1.15;
   text-align: center;
-  color: #ffffff;
+  color: #f6ebe2;
 }
 
 /* ─── TARJETAS VISUALES BENTO DE CATEGORÍAS (DEBAJO DEL HERO) ────────────── */
@@ -692,7 +719,7 @@ h3 {
   padding: 3px 8px;
   border-radius: 999px;
   background: var(--red);
-  color: #ffffff;
+  color: #f6ebe2;
   font-size: 0.62rem;
   font-weight: 800;
 }
@@ -700,7 +727,7 @@ h3 {
 .py-bento-pill em {
   padding: 1px 5px;
   border-radius: 999px;
-  background: #ffffff;
+  background: #f6ebe2;
   color: var(--red);
   font-style: normal;
   font-weight: 900;
@@ -724,7 +751,7 @@ h3 {
   height: 82px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+  box-shadow: 0 8px 18px rgba(1, 51, 37, 0.14);
 }
 
 .py-bento-card.is-compact .py-bento-media img {
@@ -774,7 +801,7 @@ h3 {
   padding: 14px;
   border: 1px solid var(--line);
   border-radius: 16px;
-  background-color: #1f1f26;
+  background-color: #013325;
   background-position: center;
   background-size: cover;
   box-shadow: var(--shadow-sm);
@@ -808,7 +835,7 @@ h3 {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(10, 10, 14, 0.85) 0%, rgba(10, 10, 14, 0.45) 65%, rgba(10, 10, 14, 0.15) 100%);
+  background: linear-gradient(90deg, rgba(1, 51, 37, 0.85) 0%, rgba(1, 51, 37, 0.45) 65%, rgba(1, 51, 37, 0.15) 100%);
 }
 
 .promo-content {
@@ -823,7 +850,7 @@ h3 {
   padding: 2px 7px;
   border-radius: 999px;
   background: var(--gold-bright);
-  color: #18181b;
+  color: #013325;
   font-size: 0.6rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -831,14 +858,14 @@ h3 {
 
 .promo-card h3 {
   margin: 0 0 2px;
-  color: #fff;
+  color: #f6ebe2;
   font-size: 1.02rem;
   font-weight: 800;
 }
 
 .promo-card p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.86);
+  color: rgba(246, 235, 226, 0.86);
   font-size: 0.74rem;
   line-height: 1.3;
 }
@@ -927,7 +954,7 @@ h3 {
 .filter-chip.active {
   border-color: var(--red);
   background: var(--red);
-  color: #fff;
+  color: #f6ebe2;
 }
 
 .filter-chip em {
@@ -1148,11 +1175,11 @@ h3 {
   border: 2px solid var(--surface);
   border-radius: 50%;
   background: var(--red);
-  color: #fff;
+  color: #f6ebe2;
   font-size: 1.25rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(229, 25, 55, 0.35);
+  box-shadow: 0 4px 12px rgba(223, 21, 23, 0.35);
 }
 
 .card-stepper {
@@ -1167,8 +1194,8 @@ h3 {
   border: 2px solid var(--surface);
   border-radius: 999px;
   background: var(--red);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(229, 25, 55, 0.35);
+  color: #f6ebe2;
+  box-shadow: 0 4px 12px rgba(223, 21, 23, 0.35);
 }
 
 .card-step-btn {
@@ -1179,8 +1206,8 @@ h3 {
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
+  background: rgba(246, 235, 226, 0.18);
+  color: #f6ebe2;
   font-size: 0.95rem;
   font-weight: 800;
   cursor: pointer;
@@ -1247,7 +1274,7 @@ h3 {
   bottom: 0;
   z-index: 150;
   padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.1));
+  background: linear-gradient(180deg, transparent, rgba(1, 51, 37, 0.1));
   pointer-events: none;
 }
 
@@ -1263,8 +1290,8 @@ h3 {
   border: 0;
   border-radius: 16px;
   background: var(--red);
-  color: #fff;
-  box-shadow: 0 12px 28px rgba(229, 25, 55, 0.38);
+  color: #f6ebe2;
+  box-shadow: 0 12px 28px rgba(223, 21, 23, 0.38);
   cursor: pointer;
 }
 
@@ -1281,7 +1308,7 @@ h3 {
   height: 26px;
   padding: 0 7px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(246, 235, 226, 0.22);
   font-size: 0.8rem;
   font-weight: 800;
 }
@@ -1337,7 +1364,7 @@ h3 {
   border: 0;
   border-radius: 10px;
   background: var(--red);
-  color: #fff;
+  color: #f6ebe2;
   font-size: 0.76rem;
   font-weight: 800;
   cursor: pointer;
@@ -1357,7 +1384,7 @@ h3 {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(15, 23, 42, 0.52);
+  background: rgba(1, 51, 37, 0.52);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
 }
@@ -1382,7 +1409,7 @@ h3 {
   border-top: 1px solid var(--line);
   border-radius: 22px 22px 0 0;
   background: var(--surface);
-  box-shadow: 0 -16px 48px rgba(15, 23, 42, 0.22);
+  box-shadow: 0 -16px 48px rgba(1, 51, 37, 0.22);
   transform: translateY(104%);
   visibility: hidden;
   transition: transform 0.32s var(--ease), visibility 0.32s;
@@ -1583,7 +1610,7 @@ h3 {
 
 .segmented {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   padding: 4px;
   border: 1px solid var(--line);
@@ -1604,7 +1631,7 @@ h3 {
 
 .segmented-btn.active {
   background: var(--red);
-  color: #fff;
+  color: #f6ebe2;
 }
 
 .payment-options {
@@ -1718,7 +1745,7 @@ h3 {
   align-items: flex-end;
   justify-content: center;
   padding: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(1, 51, 37, 0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
@@ -1785,7 +1812,7 @@ h3 {
   padding: 5px 10px;
   border-radius: 999px;
   background: var(--red);
-  color: #fff;
+  color: #f6ebe2;
   font-size: 0.68rem;
   font-weight: 800;
 }
@@ -1829,7 +1856,7 @@ h3 {
 
 .pm-price-card.pm-price-cash {
   background: var(--green-soft);
-  border-color: rgba(12, 166, 120, 0.25);
+  border-color: rgba(236, 104, 29, 0.28);
 }
 
 .pm-price-card small {
@@ -1913,7 +1940,7 @@ h3 {
   border: 0;
   border-radius: 12px;
   background: var(--red);
-  color: #fff;
+  color: #f6ebe2;
   font-weight: 800;
   font-size: 0.86rem;
   cursor: pointer;
@@ -2119,12 +2146,12 @@ h3 {
   max-width: min(380px, calc(100% - 28px));
   padding: 10px 16px;
   border-radius: 999px;
-  background: #18181b;
-  color: #fff;
+  background: #013325;
+  color: #f6ebe2;
   font-size: 0.78rem;
   font-weight: 700;
   text-align: center;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 10px 24px rgba(1, 51, 37, 0.22);
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -10px);
@@ -2352,7 +2379,7 @@ h3 {
   .side-mode-btn.active {
     background: var(--surface);
     color: var(--text);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 6px rgba(1, 51, 37, 0.06);
   }
 
   .side-cart-empty {
@@ -2475,3 +2502,121 @@ body > *:not(#splash):not(#app):not(#mobileCartBar):not(#cartOverlay):not(#cartD
   top: -9999px !important;
   z-index: -9999 !important;
 }
+
+/* ─── AJUSTES DE MARCA TAMARINDO ─────────────────────────────────────────── */
+
+.py-hero-kicker-title {
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 400;
+}
+
+.product-name {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.side-mode-switch {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.side-mode-btn {
+  font-size: 0.72rem;
+  padding: 7px 4px;
+}
+
+.segmented-btn {
+  padding: 9px 4px;
+  font-size: 0.74rem;
+}
+
+.pm-tiers {
+  margin: 12px 0 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+
+.pm-tiers h3 {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  color: var(--text);
+}
+
+.pm-tiers span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.pm-price-card strong {
+  font-size: 1.5rem;
+}
+
+.field-hint,
+.info-text {
+  margin: 4px 0 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.info-list-simple {
+  margin: 8px 0 16px;
+  padding-left: 18px;
+  color: var(--text-soft);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.info-list-simple li {
+  margin-bottom: 5px;
+}
+
+.cart-item-hint {
+  margin-top: 5px;
+  color: var(--orange);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.payment-info-simple {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.promo-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.cash-pill,
+.product-transfer {
+  color: var(--muted);
+}
+
+@media (min-width: 900px) {
+  .py-hero-headline {
+    font-size: 4.1rem;
+  }
+
+  .py-hero-sub {
+    max-width: 360px;
+    font-size: 0.88rem;
+  }
+
+  .py-hero-pizza-img {
+    width: 168px;
+    height: 168px;
+  }
+}
+

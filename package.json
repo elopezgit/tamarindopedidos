@@ -1,30 +1,28 @@
 {
-  "name": "1460pizzascaseras",
+  "name": "tamarindo",
   "version": "1.0.0",
-  "description": "Catalogo web de pedidos por WhatsApp para 14-60 Pizzas Caseras (pizzas listas para hornear, delivery y retiro).",
+  "description": "Catálogo web de pedidos y presupuestos de eventos por WhatsApp para Tamarindo (pizza napolitana, Tucumán).",
   "main": "admin.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "live-server"
+    "test": "node scripts/smoke_test.js && node scripts/verify.js",
+    "dev": "node scripts/dev_server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/elopezgit/1460pizzascaseras.git"
+    "url": "git+https://github.com/elopezgit/tamarindopedidos.git"
   },
   "keywords": [
-    "pizzas",
-    "lph",
-    "delivery",
+    "pizza",
+    "napolitana",
+    "tucuman",
+    "eventos",
     "whatsapp"
   ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/elopezgit/1460pizzascaseras/issues"
+    "url": "https://github.com/elopezgit/tamarindopedidos/issues"
   },
-  "homepage": "https://github.com/elopezgit/1460pizzascaseras#readme",
-  "devDependencies": {
-    "live-server": "^1.2.2"
-  }
+  "homepage": "https://github.com/elopezgit/tamarindopedidos#readme"
 }

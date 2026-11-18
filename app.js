@@ -1,11 +1,11 @@
 'use strict';
 
-/* ─── 14-60 Pizzas Caseras · WebApp Mobile-First de Pedidos ───────────────── */
+/* ─── Tamarindo · WebApp Mobile-First de Pedidos ────────────────────────── */
 
-const CART_KEY = 'p1460_cart';
-const CUSTOMER_KEY = 'p1460_customer';
-const THEME_KEY = 'p1460_theme_light_v1';
-const LAST_ORDER_KEY = 'p1460_last_order';
+const CART_KEY = 'tamarindo_cart';
+const CUSTOMER_KEY = 'tamarindo_customer';
+const THEME_KEY = 'tamarindo_theme_light_v1';
+const LAST_ORDER_KEY = 'tamarindo_last_order';
 
 const state = {
   categories: clone(DEFAULT_CATEGORIES),
@@ -16,7 +16,6 @@ const state = {
   currentCat: 'todos',
   search: '',
   deliveryMode: 'delivery',
-  paymentMethod: 'efectivo',
   modalProductId: null,
   modalQty: 1,
   lastOrder: loadJSON(LAST_ORDER_KEY, null),
@@ -24,8 +23,8 @@ const state = {
   toastTimer: null
 };
 
-if (state.customer.deliveryMode === 'takeaway') {
-  state.deliveryMode = 'takeaway';
+if (state.customer.deliveryMode === 'takeaway' || state.customer.deliveryMode === 'evento') {
+  state.deliveryMode = state.customer.deliveryMode;
 }
 
 /* ─── ARRANQUE ───────────────────────────────────────────────────────────── */
@@ -40,7 +39,8 @@ function init() {
   renderCategories();
   renderBanners();
   renderMenu();
-  renderPickupPoints();
+  renderContactChannels();
+  renderEventInfo();
   renderCart();
   renderStoreStatus();
   applyDeliveryMode(state.deliveryMode, false);
@@ -74,7 +74,6 @@ function bindEvents() {
     document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' });
   });
 
-  // Modal de Info y Locales
   document.getElementById('openInfoModalBtn')?.addEventListener('click', openInfoModal);
   document.getElementById('storeInfoCardBtn')?.addEventListener('click', openInfoModal);
   document.getElementById('footerInfoBtn')?.addEventListener('click', openInfoModal);
@@ -130,18 +129,7 @@ function bindEvents() {
     applyDeliveryMode(button.dataset.mode);
   });
 
-  document.getElementById('paymentOptions')?.addEventListener('change', (event) => {
-    if (event.target.name === 'pago') {
-      state.paymentMethod = event.target.value;
-      renderCart();
-    }
-  });
-
-  document.getElementById('copyAliasBtn')?.addEventListener('click', (event) => {
-    copyAliasToClipboard(BRAND.alias, event.currentTarget);
-  });
-
-  ['fNombre', 'fTel', 'fDir', 'fNota', 'fPickupPoint'].forEach((id) => {
+  ['fNombre', 'fTel', 'fDir', 'fNota', 'fFecha', 'fLugar', 'fInvitados'].forEach((id) => {
     document.getElementById(id)?.addEventListener('input', saveCustomerDraft);
     document.getElementById(id)?.addEventListener('change', saveCustomerDraft);
   });
@@ -160,52 +148,6 @@ function bindEvents() {
 
   document.addEventListener('keydown', handleEscape);
   window.addEventListener('scroll', onScroll, { passive: true });
-}
-
-/* ─── COPIAR ALIAS AL PORTAPAPELES ───────────────────────────────────────── */
-
-async function copyAliasToClipboard(aliasText, buttonEl) {
-  const alias = String(aliasText || BRAND.alias || '1460pizzas').trim();
-  let copied = false;
-
-  try {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      await navigator.clipboard.writeText(alias);
-      copied = true;
-    }
-  } catch {
-    copied = false;
-  }
-
-  if (!copied) {
-    try {
-      const temp = document.createElement('textarea');
-      temp.value = alias;
-      temp.setAttribute('readonly', '');
-      temp.style.position = 'fixed';
-      temp.style.opacity = '0';
-      document.body.appendChild(temp);
-      temp.select();
-      temp.setSelectionRange(0, alias.length);
-      copied = document.execCommand('copy');
-      temp.remove();
-    } catch {
-      copied = false;
-    }
-  }
-
-  if (buttonEl) {
-    const original = buttonEl.dataset.originalLabel || '📋 Copiar alias';
-    buttonEl.dataset.originalLabel = original;
-    buttonEl.textContent = '✓ ¡Alias copiado!';
-    buttonEl.classList.add('is-copied');
-    setTimeout(() => {
-      buttonEl.textContent = original;
-      buttonEl.classList.remove('is-copied');
-    }, 2400);
-  }
-
-  showToast(`✓ Alias "${alias}" copiado al portapapeles`);
 }
 
 function handleProductGridClick(event) {
@@ -234,9 +176,7 @@ function handleProductGridClick(event) {
   }
 
   const card = event.target.closest('[data-product-id]');
-  if (card) {
-    openProductModal(card.dataset.productId);
-  }
+  if (card) openProductModal(card.dataset.productId);
 }
 
 function handleProductGridKeydown(event) {
@@ -253,17 +193,13 @@ function handleCartClick(event) {
     changeCartQty(minus.dataset.cartMinus, -1);
     return;
   }
-
   const plus = event.target.closest('[data-cart-plus]');
   if (plus) {
     changeCartQty(plus.dataset.cartPlus, 1);
     return;
   }
-
   const remove = event.target.closest('[data-cart-remove]');
-  if (remove) {
-    removeFromCart(remove.dataset.cartRemove);
-  }
+  if (remove) removeFromCart(remove.dataset.cartRemove);
 }
 
 function handleCartNoteInput(event) {
@@ -289,21 +225,18 @@ function handleEscape(event) {
     closeInfoModal();
     return;
   }
-  if (document.getElementById('cartDrawer')?.classList.contains('is-open')) {
-    closeCart();
-  }
+  if (document.getElementById('cartDrawer')?.classList.contains('is-open')) closeCart();
 }
 
 function onScroll() {
   document.getElementById('siteHeader')?.classList.toggle('is-scrolled', window.scrollY > 8);
 }
 
-/* ─── TEMA (MODO CLARO POR DEFECTO) ──────────────────────────────────────── */
+/* ─── TEMA ───────────────────────────────────────────────────────────────── */
 
 function initTheme() {
   const saved = localStorage.getItem(THEME_KEY);
-  const theme = saved === 'dark' ? 'dark' : 'light';
-  applyTheme(theme);
+  applyTheme(saved === 'dark' ? 'dark' : 'light');
 }
 
 function applyTheme(theme) {
@@ -316,7 +249,7 @@ function applyTheme(theme) {
     button.setAttribute('aria-label', theme === 'dark' ? 'Activar tema claro' : 'Activar tema oscuro');
   }
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = theme === 'dark' ? '#181920' : '#f5f6f9';
+  if (meta) meta.content = theme === 'dark' ? '#013325' : '#EC681D';
 }
 
 function toggleTheme() {
@@ -330,25 +263,9 @@ function renderStoreStatus() {
   const wrap = document.getElementById('storeStatus');
   const text = document.getElementById('storeStatusText');
   if (!wrap || !text) return;
-
-  const now = new Date();
-  const minutes = now.getHours() * 60 + now.getMinutes();
-  const morningOpen = minutes >= 8 * 60 + 30 && minutes <= 15 * 60;
-  const eveningOpen = minutes >= 19 * 60 && minutes <= 22 * 60;
-  const isOpen = morningOpen || eveningOpen;
-
-  wrap.classList.toggle('is-open', isOpen);
-  wrap.classList.toggle('is-closed', !isOpen);
-
-  if (isOpen) {
-    text.textContent = 'Abierto';
-  } else if (minutes < 8 * 60 + 30) {
-    text.textContent = 'Abre 8:30 hs';
-  } else if (minutes < 19 * 60) {
-    text.textContent = 'Abre 19:00 hs';
-  } else {
-    text.textContent = 'Abre 8:30 hs';
-  }
+  wrap.classList.add('is-open');
+  wrap.classList.remove('is-closed');
+  text.textContent = 'Consultanos por WhatsApp';
 }
 
 /* ─── CATEGORÍAS Y PROMOS ────────────────────────────────────────────────── */
@@ -382,13 +299,12 @@ function renderCategories() {
     container.innerHTML = buttons.join('');
   }
 
-  // Tarjetas traslúcidas con insignia en la base del hero (estilo PedidosYa)
   if (heroQuick) {
     const badgeLabels = [
-      { top: 'EFECTIVO', main: '10%', sub: 'OFF' },
-      { top: 'HORNO', main: '12m', sub: 'LPH' },
-      { top: 'CASERAS', main: '10%', sub: 'OFF' },
-      { top: 'COMBOS', main: 'PACK', sub: 'LPH' }
+      { top: 'MASA', main: 'FRESCA', sub: '⭐' },
+      { top: 'HORNO', main: 'NAP.', sub: '🔥' },
+      { top: 'EVENTOS', main: '3 HS', sub: 'EN VIVO' },
+      { top: 'TUCUMÁN', main: '🍕', sub: 'HECHA' }
     ];
 
     heroQuick.innerHTML = activeCategories.map((cat, idx) => {
@@ -407,25 +323,24 @@ function renderCategories() {
     }).join('');
   }
 
-  // Tarjetas visuales Bento debajo del hero (estilo PedidosYa Market / Restaurantes)
   if (bentoGrid) {
     const fallbackImages = {
-      clasicas: 'img/productos/muzzarella.webp',
-      especiales: 'img/productos/4-quesos.webp',
-      fugazzas: 'img/productos/fugazzetta-caramelizada.webp',
-      promos: 'img/productos/combo-muzzarella.webp'
+      clasicas: 'img/productos/margherita.webp',
+      autor: 'img/productos/queso-azul-repollo.webp',
+      casa: 'img/productos/pepperoni-tamarindo.webp',
+      eventos: 'img/productos/pepperoni-detalle.webp'
     };
 
     bentoGrid.innerHTML = activeCategories.map((cat, idx) => {
       const firstProduct = state.menu.find((item) => item.cat === cat.slug && item.image);
-      const imgSrc = firstProduct?.image || fallbackImages[cat.slug] || 'img/productos/extra-muzza.webp';
-      const isFeatured = idx < 2; // Las 2 primeras más grandes arriba, el resto debajo
+      const imgSrc = firstProduct?.image || fallbackImages[cat.slug] || 'img/productos/margherita.webp';
+      const isFeatured = idx < 2;
       const isSelected = state.currentCat === cat.slug;
       return `
         <button type="button" class="py-bento-card ${isFeatured ? 'is-large' : 'is-compact'} ${isSelected ? 'is-active' : ''}" data-cat="${escapeAttr(cat.slug)}">
-          ${idx === 0 ? '<span class="py-bento-pill"><strong>14-60</strong> <em>LPH</em></span>' : ''}
+          ${idx === 0 ? '<span class="py-bento-pill"><strong>Tamarindo</strong> <em>Napolitana</em></span>' : ''}
           <div class="py-bento-media">
-            <img src="${escapeAttr(imgSrc)}" alt="${escapeAttr(cat.name)}" loading="lazy" onerror="this.src='img/productos/muzzarella.webp'">
+            <img src="${escapeAttr(imgSrc)}" alt="${escapeAttr(cat.name)}" loading="lazy" onerror="this.src='img/productos/margherita.webp'">
           </div>
           <span class="py-bento-title">${escapeHTML(cat.name)}</span>
         </button>
@@ -460,7 +375,7 @@ function renderBanners() {
     });
   }
 
-  const badges = ['🔥 Destacado', '🎊 Eventos', '🍕 Clásicas'];
+  const badges = ['🍕 Napolitana', '🎉 Eventos', '✨ De autor'];
 
   container.innerHTML = loopedBanners.map(({ banner, realIndex }, domIndex) => {
     const link = banner.link || '#menu';
@@ -486,12 +401,11 @@ function renderBanners() {
   }
 
   if (count <= 1) return;
-
   initInfiniteBannerCarousel(container, dotsContainer, count);
 }
 
 function initInfiniteBannerCarousel(container, dotsContainer, count) {
-  let currentDomIndex = count; // Arranca en el set central (índice N)
+  let currentDomIndex = count;
   let isPaused = false;
   let normalizeTimeout = null;
   let scrollDebounce = null;
@@ -541,20 +455,14 @@ function initInfiniteBannerCarousel(container, dotsContainer, count) {
     if (!step) return;
 
     currentDomIndex += 1;
-    container.scrollTo({
-      left: currentDomIndex * step,
-      behavior: 'smooth'
-    });
+    container.scrollTo({ left: currentDomIndex * step, behavior: 'smooth' });
     updateDots(currentDomIndex % count);
 
     clearTimeout(normalizeTimeout);
     normalizeTimeout = setTimeout(normalizeLoopPosition, 520);
   };
 
-  // Posicionar inicialmente en el bloque del medio sin animación
-  requestAnimationFrame(() => {
-    jumpInstantTo(count);
-  });
+  requestAnimationFrame(() => jumpInstantTo(count));
 
   if (!container.dataset.carouselBound) {
     container.dataset.carouselBound = '1';
@@ -581,10 +489,7 @@ function initInfiniteBannerCarousel(container, dotsContainer, count) {
       const step = getCardStepWidth();
       if (!step) return;
       currentDomIndex = count + targetReal;
-      container.scrollTo({
-        left: currentDomIndex * step,
-        behavior: 'smooth'
-      });
+      container.scrollTo({ left: currentDomIndex * step, behavior: 'smooth' });
       updateDots(targetReal);
     });
   }
@@ -592,24 +497,24 @@ function initInfiniteBannerCarousel(container, dotsContainer, count) {
   state.bannerTimer = setInterval(stepNextBanner, 3500);
 }
 
-function renderPickupPoints() {
-  const grid = document.getElementById('pickupGrid');
+/* ─── CONTACTO E INFO DE EVENTOS ─────────────────────────────────────────── */
+
+function renderContactChannels() {
+  const grid = document.getElementById('contactGrid');
   if (!grid) return;
 
-  const points = Array.isArray(PICKUP_POINTS) ? PICKUP_POINTS : [];
-  grid.innerHTML = points.map((point) => {
-    const phone = String(point.whatsapp || BRAND.whatsapp).replace(/\D/g, '');
+  const canales = Array.isArray(CONTACT_CHANNELS) ? CONTACT_CHANNELS : [];
+  grid.innerHTML = canales.map((canal) => {
+    const external = /^https?:\/\//i.test(canal.url);
+    const attrs = external ? ' target="_blank" rel="noopener"' : '';
     return `
       <article class="pickup-card">
-        <span class="pickup-icon" aria-hidden="true">${escapeHTML(point.icon || '📍')}</span>
+        <span class="pickup-icon" aria-hidden="true">${escapeHTML(canal.icon || '📍')}</span>
         <div>
-          <h3>${escapeHTML(point.name)}</h3>
-          <p>${escapeHTML(point.address)}</p>
-          <p class="pickup-hours">🕒 ${escapeHTML(point.hours)}</p>
+          <h3>${escapeHTML(canal.name)}</h3>
+          <p>${escapeHTML(canal.detail)}</p>
           <div class="pickup-links">
-            <a href="${escapeAttr(point.mapsUrl)}" target="_blank" rel="noopener">📍 Mapa</a>
-            <a href="https://wa.me/${escapeAttr(phone)}?text=${encodeURIComponent(`Hola, quiero consultar por el retiro en ${point.name}.`)}"
-              target="_blank" rel="noopener">💬 WhatsApp</a>
+            <a href="${escapeAttr(canal.url)}"${attrs}>Abrir ${escapeHTML(canal.name)}</a>
           </div>
         </div>
       </article>
@@ -617,7 +522,17 @@ function renderPickupPoints() {
   }).join('');
 }
 
-/* ─── MODAL DE INFO Y PUNTOS DE RETIRO ───────────────────────────────────── */
+function renderEventInfo() {
+  const list = document.getElementById('eventInfoList');
+  if (!list) return;
+  const service = BRAND.eventService || {};
+  const items = [
+    ...(service.includes || []),
+    ...(service.extras || []),
+    ...(service.conditions || [])
+  ];
+  list.innerHTML = items.map((item) => `<li>${escapeHTML(item)}</li>`).join('');
+}
 
 function openInfoModal() {
   const overlay = document.getElementById('infoModalOverlay');
@@ -631,7 +546,7 @@ function closeInfoModal() {
   syncBodyScroll();
 }
 
-/* ─── MENÚ ESTILO PEDIDOSYA (AGRUPADO POR CATEGORÍA + TARJETAS HORIZONTALES) ─ */
+/* ─── MENÚ ESTILO PEDIDOSYA ──────────────────────────────────────────────── */
 
 function renderMenu() {
   const grid = document.getElementById('productGrid');
@@ -640,10 +555,7 @@ function renderMenu() {
 
   const query = normalize(state.search);
   const filtered = state.menu
-    .filter((item) => {
-      if (state.currentCat === 'todos') return true;
-      return item.cat === state.currentCat;
-    })
+    .filter((item) => state.currentCat === 'todos' || item.cat === state.currentCat)
     .filter((item) => {
       if (!query) return true;
       const haystack = normalize(`${item.name} ${item.desc} ${item.ingredients} ${(item.tags || []).join(' ')}`);
@@ -718,12 +630,32 @@ function renderMenu() {
   `;
 }
 
+function getTiers(product) {
+  if (Array.isArray(product?.tiers) && product.tiers.length) return product.tiers;
+  if (product?.code === 'TAM-EV-01') return EVENT_TIERS;
+  return null;
+}
+
+function getUnitPrice(product, qty = 1) {
+  const base = Number(product?.price || 0);
+  const tiers = getTiers(product);
+  if (!tiers) return base;
+  const cantidad = Math.max(1, Number(qty) || 1);
+  let precio = Number(tiers[0].price || base);
+  tiers.forEach((tramo) => {
+    if (cantidad >= Number(tramo.min)) precio = Number(tramo.price);
+  });
+  return precio;
+}
+
 function productCardHTML(product) {
   const image = product.image || fallbackImage(product.cat);
   const rating = Number(product.rating || 5).toFixed(1);
   const inCartQty = Number(state.cart[product.id]?.qty || 0);
   const isPerPerson = productUnit(product) === 'persona';
-  const cashPrice = getCashPrice(product.price);
+  const tiers = getTiers(product);
+  const price = tiers ? Number(tiers[0].price) : Number(product.price || 0);
+  const minQty = Math.max(1, Number(product.minQty || 1));
 
   const badgeHTML = product.hot
     ? '<span class="py-badge py-badge-hot">🔥 Popular</span>'
@@ -742,6 +674,10 @@ function productCardHTML(product) {
         aria-label="Agregar ${escapeAttr(product.name)} al pedido">+</button>
     `;
 
+  const priceLabel = tiers
+    ? `Desde <strong>${formatPrice(price)}</strong> / persona`
+    : formatPrice(price);
+
   return `
     <article class="product-card ${inCartQty > 0 ? 'in-cart' : ''}" data-product-id="${escapeAttr(product.id)}" tabindex="0" role="button"
       aria-label="Ver detalle de ${escapeAttr(product.name)}">
@@ -755,11 +691,10 @@ function productCardHTML(product) {
         <div class="product-footer">
           <div class="product-price-block">
             <div class="price-main-row">
-              <span class="product-price">${formatPrice(cashPrice)}</span>
-              <span class="cash-pill">10% OFF efvo.</span>
+              <span class="product-price">${priceLabel}</span>
             </div>
             <span class="product-transfer">
-              Transf.: <strong>${formatPrice(product.price)}</strong> ${isPerPerson ? '/ persona (mín. 25)' : 'c/u'}
+              ${isPerPerson ? `Mínimo ${minQty} personas · precio por tramo` : 'Pizza napolitana · masa fresca'}
             </span>
           </div>
         </div>
@@ -784,12 +719,12 @@ function categoryIcon(slug) {
 
 function fallbackImage(cat) {
   const map = {
-    clasicas: 'img/productos/muzzarella.webp',
-    especiales: 'img/productos/4-quesos.webp',
-    fugazzas: 'img/productos/fugazzetta-caramelizada.webp',
-    promos: 'img/productos/combo-clasicas.webp'
+    clasicas: 'img/productos/margherita.webp',
+    autor: 'img/productos/queso-azul-repollo.webp',
+    casa: 'img/productos/pepperoni-tamarindo.webp',
+    eventos: 'img/productos/pepperoni-detalle.webp'
   };
-  return map[cat] || 'img/productos/muzzarella.webp';
+  return map[cat] || 'img/productos/margherita.webp';
 }
 
 /* ─── MODAL DE PRODUCTO ──────────────────────────────────────────────────── */
@@ -819,36 +754,40 @@ function renderProductModal() {
   const tagsHTML = tags.length
     ? `<div class="pm-tags">${tags.map((tag) => `<span>${escapeHTML(tag)}</span>`).join('')}</div>`
     : '';
+  const isPerPerson = productUnit(product) === 'persona';
+  const minQty = Math.max(1, Number(product.minQty || 1));
+  const tiers = getTiers(product);
+  const precioUnitario = getUnitPrice(product, state.modalQty);
+  const tiersHTML = tiers
+    ? `<div class="pm-tiers"><h3>Valores por persona</h3>${tiers.map((tramo) => `<span>Desde ${tramo.min} invitados · ${formatPrice(tramo.price)}</span>`).join('')}</div>`
+    : '';
 
   container.innerHTML = `
     <div class="pm-media">
       <img src="${escapeAttr(image)}" alt="${escapeAttr(product.name)}">
-      <span class="pm-media-badge">${product.hot ? '🔥 Más pedida' : '🍕 Pizza LPH'}</span>
+      <span class="pm-media-badge">${product.hot ? '🔥 Más pedida' : '🍕 Pizza napolitana'}</span>
     </div>
     <div class="pm-body">
       <span class="pm-cat">${escapeHTML(categoryName(product.cat))}</span>
       <h2 id="pmTitle">${escapeHTML(product.name)}</h2>
-      <div class="pm-rating"><span>⭐ ${rating}</span> · Lista para hornear</div>
+      <div class="pm-rating"><span>⭐ ${rating}</span> · ${isPerPerson ? 'Producción en vivo' : 'Masa fresca, hecha al momento'}</div>
       <div class="pm-prices">
         <div class="pm-price-card pm-price-cash">
-          <small>💵 Efectivo (10% OFF)</small>
-          <strong>${formatPrice(getCashPrice(product.price))}</strong>
-        </div>
-        <div class="pm-price-card">
-          <small>🏦 Transferencia (${productUnit(product) === 'persona' ? 'por persona' : 'lista'})</small>
-          <strong>${formatPrice(product.price)}</strong>
+          <small>${isPerPerson ? '💵 Precio por persona' : '💵 Precio por pizza'}</small>
+          <strong>${formatPrice(precioUnitario)}</strong>
         </div>
       </div>
       <p class="pm-desc">${escapeHTML(product.desc)}</p>
       ${tagsHTML}
+      ${tiersHTML}
       <div class="pm-detail-grid">
         <div>
           <h3>Ingredientes</h3>
           <p>${escapeHTML(product.ingredients || 'Consultá los ingredientes por WhatsApp.')}</p>
         </div>
         <div>
-          <h3>Cocción</h3>
-          <p>${escapeHTML(product.prepDesc || 'Horneá a 220 °C durante 12-15 minutos, sin descongelar.')}</p>
+          <h3>${isPerPerson ? 'El servicio' : 'Preparación'}</h3>
+          <p>${escapeHTML(product.prepDesc || 'Masa fresca, estirada y horneada en el momento.')}</p>
         </div>
       </div>
       <div class="pm-actions">
@@ -858,24 +797,21 @@ function renderProductModal() {
           <button type="button" id="pmPlusBtn" aria-label="Sumar una unidad">+</button>
         </div>
         <button type="button" class="pm-add-btn" id="pmAddBtn">
-          Sumar · ${formatPrice(getCashPrice(product.price) * state.modalQty)} efvo.
+          Sumar · ${formatPrice(precioUnitario * state.modalQty)}
         </button>
       </div>
     </div>
   `;
 
-  const productForModal = state.menu.find((item) => String(item.id) === String(state.modalProductId));
-  const minQtyForModal = Math.max(1, Number(productForModal?.minQty || 1));
+  const minQtyForModal = minQty;
   document.getElementById('pmMinusBtn')?.addEventListener('click', () => {
     state.modalQty = Math.max(minQtyForModal, state.modalQty - 1);
     updateModalQtyAndPrice();
   });
-
   document.getElementById('pmPlusBtn')?.addEventListener('click', () => {
-    state.modalQty = Math.min(99, state.modalQty + 1);
+    state.modalQty = Math.min(999, state.modalQty + 1);
     updateModalQtyAndPrice();
   });
-
   document.getElementById('pmAddBtn')?.addEventListener('click', () => {
     setCartQty(product.id, state.modalQty);
     closeProductModal();
@@ -889,7 +825,7 @@ function updateModalQtyAndPrice() {
   const button = document.getElementById('pmAddBtn');
   if (qty) qty.textContent = state.modalQty;
   if (button) {
-    button.textContent = `Sumar · ${formatPrice(getCashPrice(product.price) * state.modalQty)} efvo.`;
+    button.textContent = `Sumar · ${formatPrice(getUnitPrice(product, state.modalQty) * state.modalQty)}`;
   }
 }
 
@@ -936,7 +872,7 @@ function setCartQty(id, quantity) {
   const minQty = Math.max(1, Number(product.minQty || 1));
   const current = state.cart[id] || { qty: 0, note: '' };
   state.cart[id] = {
-    qty: Math.min(99, Math.max(minQty, Number(quantity || minQty))),
+    qty: Math.min(999, Math.max(minQty, Number(quantity || minQty))),
     note: current.note || ''
   };
   saveCart();
@@ -955,10 +891,7 @@ function addToCart(id, quantity = 1) {
     ? Math.max(minQty, Number(quantity || 1))
     : Number(current.qty) + Number(quantity || 1);
 
-  state.cart[id] = {
-    qty: Math.min(99, nextQty),
-    note: current.note || ''
-  };
+  state.cart[id] = { qty: Math.min(999, nextQty), note: current.note || '' };
   saveCart();
   renderCart();
   renderMenu();
@@ -975,7 +908,7 @@ function changeCartQty(id, delta) {
     removeFromCart(id);
     return;
   }
-  entry.qty = Math.min(99, next);
+  entry.qty = Math.min(999, next);
   saveCart();
   renderCart();
   renderMenu();
@@ -997,7 +930,6 @@ function clearCart() {
 
 function getCartEntries() {
   const entries = [];
-
   Object.entries(state.cart).forEach(([id, value]) => {
     const product = state.menu.find((item) => String(item.id) === String(id));
     const qty = Math.max(0, parseInt(value?.qty, 10) || 0);
@@ -1007,18 +939,21 @@ function getCartEntries() {
       qty,
       note: String(value?.note || ''),
       product,
-      subtotal: Number(product.price || 0) * qty
+      subtotal: getUnitPrice(product, qty) * qty
     });
   });
-
   return entries;
+}
+
+function getCartTotals(entries = getCartEntries()) {
+  const subtotal = entries.reduce((sum, entry) => sum + entry.subtotal, 0);
+  return { subtotal, descuento: 0, total: subtotal };
 }
 
 function renderCart() {
   const entries = getCartEntries();
   const totals = getCartTotals(entries);
   const count = entries.reduce((sum, entry) => sum + entry.qty, 0);
-  const cashTotal = Math.round(totals.subtotalLista * (1 - Number(BRAND.cashDiscount || 0)));
 
   ['cartCount', 'sideCartCount', 'mobileCartCount'].forEach((id) => {
     const el = document.getElementById(id);
@@ -1042,8 +977,8 @@ function renderCart() {
   if (sideEmpty) sideEmpty.hidden = entries.length > 0;
   if (sideFooter) sideFooter.hidden = entries.length === 0;
 
-  setText('sideSubtotal', formatPrice(totals.subtotalLista));
-  setText('sideCashTotal', formatPrice(cashTotal));
+  setText('sideSubtotal', formatPrice(totals.subtotal));
+  setText('sideCashTotal', formatPrice(totals.total));
   setText('sideBtnTotal', formatPrice(totals.total));
 
   const mobileBar = document.getElementById('mobileCartBar');
@@ -1051,18 +986,23 @@ function renderCart() {
   document.body.classList.toggle('has-mobile-cart', entries.length > 0);
   setText('mobileCartTotal', formatPrice(totals.total));
 
-  setText('cartSubtotal', formatPrice(totals.subtotalLista));
-  setText('cartDiscount', `-${formatPrice(totals.descuento)}`);
+  setText('cartSubtotal', formatPrice(totals.subtotal));
   setText('cartTotal', formatPrice(totals.total));
-  setText('cartShipping', state.deliveryMode === 'delivery' ? 'A coordinar' : 'Retiro en local');
+  setText('cartShipping', shippingLabel());
 
-  const discountRow = document.getElementById('discountRow');
-  if (discountRow) discountRow.hidden = entries.length === 0 || totals.descuento === 0;
-
-  updatePaymentInfo(totals.descuento);
+  const info = document.getElementById('paymentInfo');
+  if (info) {
+    info.innerHTML = '💬 Coordinamos la forma de pago por WhatsApp al confirmar el pedido. Sin costos ocultos.';
+  }
 
   const checkoutButton = document.getElementById('checkoutBtn');
   if (checkoutButton) checkoutButton.disabled = entries.length === 0;
+}
+
+function shippingLabel() {
+  if (state.deliveryMode === 'evento') return 'Lugar del evento';
+  if (state.deliveryMode === 'takeaway') return 'Retiro a coordinar';
+  return 'A coordinar';
 }
 
 function sideCartItemHTML(entry) {
@@ -1071,7 +1011,7 @@ function sideCartItemHTML(entry) {
     <div class="side-item">
       <div class="side-item-info">
         <strong>${escapeHTML(product.name)}</strong>
-        <small>${formatPrice(getCashPrice(product.price))} efvo. · ${formatPrice(product.price)} lista</small>
+        <small>${formatPrice(getUnitPrice(product, entry.qty))} c/u · ${formatPrice(entry.subtotal)}</small>
       </div>
       <div class="side-item-controls">
         <div class="qty-control qty-sm">
@@ -1085,44 +1025,10 @@ function sideCartItemHTML(entry) {
   `;
 }
 
-function getCartTotals(entries = getCartEntries()) {
-  const subtotalLista = entries.reduce((sum, entry) => sum + entry.subtotal, 0);
-  const descuento = state.paymentMethod === 'efectivo'
-    ? Math.round(subtotalLista * Number(BRAND.cashDiscount || 0))
-    : 0;
-  return {
-    subtotalLista,
-    descuento,
-    total: subtotalLista - descuento
-  };
-}
-
-function getCashPrice(price) {
-  return Math.round(Number(price || 0) * (1 - Number(BRAND.cashDiscount || 0)));
-}
-
-function updatePaymentInfo(discount = 0) {
-  const info = document.getElementById('paymentInfo');
-  const aliasBox = document.getElementById('aliasCopyBox');
-  const aliasValue = document.getElementById('aliasTextValue');
-
-  if (aliasValue) aliasValue.textContent = BRAND.alias || '1460pizzas';
-  if (aliasBox) aliasBox.hidden = state.paymentMethod !== 'transferencia';
-
-  if (!info) return;
-
-  if (state.paymentMethod === 'efectivo') {
-    info.innerHTML = discount > 0
-      ? `💵 Pagando en efectivo ahorrás <strong>${formatPrice(discount)}</strong> (10% OFF incluido).`
-      : '💵 Pagás en efectivo al recibir o retirar el pedido.';
-  } else {
-    info.innerHTML = `🏦 Copiá el alias de arriba y enviá el comprobante por WhatsApp al confirmar.`;
-  }
-}
-
 function cartItemHTML(entry) {
   const product = entry.product;
   const image = product.image || fallbackImage(product.cat);
+  const isPerPerson = productUnit(product) === 'persona';
   return `
     <article class="cart-item" data-cart-id="${escapeAttr(entry.id)}">
       <img src="${escapeAttr(image)}" alt="${escapeAttr(product.name)}"
@@ -1133,12 +1039,13 @@ function cartItemHTML(entry) {
           <button class="cart-remove" type="button" data-cart-remove="${escapeAttr(entry.id)}"
             aria-label="Quitar ${escapeAttr(product.name)}">✕</button>
         </div>
-        <div class="cart-item-price">${formatPrice(getCashPrice(product.price))} efvo. / ${formatPrice(product.price)} ${productUnit(product) === 'persona' ? 'por persona' : 'lista'}</div>
+        <div class="cart-item-price">${formatPrice(getUnitPrice(product, entry.qty))} c/u · ${formatPrice(entry.subtotal)}</div>
         <div class="qty-control">
           <button type="button" data-cart-minus="${escapeAttr(entry.id)}" aria-label="Restar">−</button>
           <span>${entry.qty}</span>
           <button type="button" data-cart-plus="${escapeAttr(entry.id)}" aria-label="Sumar">+</button>
         </div>
+        ${isPerPerson ? `<div class="cart-item-hint">Total para ${entry.qty} ${entry.qty === 1 ? 'persona' : 'personas'}</div>` : ''}
         <input class="cart-item-note" type="text" data-note-id="${escapeAttr(entry.id)}"
           value="${escapeAttr(entry.note)}" maxlength="120" placeholder="Nota para este producto (opcional)">
       </div>
@@ -1157,9 +1064,9 @@ function hydrateCustomerForm() {
   setValue('fNombre', state.customer.name || '');
   setValue('fTel', state.customer.phone || '');
   setValue('fDir', state.customer.address || '');
-  if (state.customer.pickupPoint) {
-    setValue('fPickupPoint', state.customer.pickupPoint);
-  }
+  setValue('fFecha', state.customer.eventDate || '');
+  setValue('fLugar', state.customer.eventPlace || '');
+  setValue('fInvitados', state.customer.guests || '');
   applyDeliveryMode(state.deliveryMode, false);
 }
 
@@ -1169,14 +1076,16 @@ function saveCustomerDraft() {
     name: document.getElementById('fNombre')?.value.trim() || '',
     phone: document.getElementById('fTel')?.value.trim() || '',
     address: document.getElementById('fDir')?.value.trim() || '',
-    pickupPoint: document.getElementById('fPickupPoint')?.value || '',
+    eventDate: document.getElementById('fFecha')?.value || '',
+    eventPlace: document.getElementById('fLugar')?.value.trim() || '',
+    guests: document.getElementById('fInvitados')?.value || '',
     deliveryMode: state.deliveryMode
   };
   localStorage.setItem(CUSTOMER_KEY, JSON.stringify(state.customer));
 }
 
 function applyDeliveryMode(mode, persist = true) {
-  state.deliveryMode = mode === 'takeaway' ? 'takeaway' : 'delivery';
+  state.deliveryMode = mode === 'takeaway' || mode === 'evento' ? mode : 'delivery';
 
   document.querySelectorAll('#deliveryToggle [data-mode], #sideDeliveryToggle [data-mode]').forEach((button) => {
     button.classList.toggle('active', button.dataset.mode === state.deliveryMode);
@@ -1184,13 +1093,13 @@ function applyDeliveryMode(mode, persist = true) {
 
   const addressField = document.getElementById('addressField');
   const addressInput = document.getElementById('fDir');
-  const pickupField = document.getElementById('pickupPointField');
+  const eventFields = document.getElementById('eventFields');
 
   if (addressField) addressField.hidden = state.deliveryMode !== 'delivery';
   if (addressInput) addressInput.required = state.deliveryMode === 'delivery';
-  if (pickupField) pickupField.hidden = state.deliveryMode !== 'takeaway';
+  if (eventFields) eventFields.hidden = state.deliveryMode !== 'evento';
 
-  setText('cartShipping', state.deliveryMode === 'delivery' ? 'A coordinar' : 'Retiro en local');
+  setText('cartShipping', shippingLabel());
 
   if (persist) {
     state.customer.deliveryMode = state.deliveryMode;
@@ -1210,8 +1119,10 @@ async function submitOrder(event) {
   const nombre = document.getElementById('fNombre')?.value.trim() || '';
   const telefono = document.getElementById('fTel')?.value.trim() || '';
   const direccion = document.getElementById('fDir')?.value.trim() || '';
-  const pickupPoint = document.getElementById('fPickupPoint')?.value || 'Centro de producción (Luis Patrón Costa 1460)';
   const nota = document.getElementById('fNota')?.value.trim() || '';
+  const fecha = document.getElementById('fFecha')?.value || '';
+  const lugar = document.getElementById('fLugar')?.value.trim() || '';
+  const invitados = Math.max(0, parseInt(document.getElementById('fInvitados')?.value, 10) || 0);
 
   if (!nombre) {
     showToast('Completá tu nombre.', 'error');
@@ -1231,27 +1142,42 @@ async function submitOrder(event) {
     return;
   }
 
+  if (state.deliveryMode === 'evento') {
+    if (!fecha || !lugar) {
+      showToast('Completá la fecha y el lugar del evento.', 'error');
+      (!fecha ? document.getElementById('fFecha') : document.getElementById('fLugar'))?.focus();
+      return;
+    }
+    if (invitados < 20) {
+      showToast('El mínimo para eventos es de 20 invitados.', 'error');
+      document.getElementById('fInvitados')?.focus();
+      return;
+    }
+  }
+
   const totals = getCartTotals(entries);
   const order = {
     codigo: makeOrderCode(),
     nombre,
     telefono,
     modalidad: state.deliveryMode,
-    direccion: state.deliveryMode === 'delivery' ? direccion : pickupPoint,
-    pickupPoint: state.deliveryMode === 'takeaway' ? pickupPoint : '',
-    pago: state.paymentMethod,
+    direccion: state.deliveryMode === 'delivery' ? direccion : lugar,
+    fecha,
+    lugar,
+    invitados,
+    pago: 'a coordinar',
     nota,
     items: entries.map((entry) => ({
       id: entry.id,
       name: entry.product.name,
       unit: productUnit(entry.product),
       qty: entry.qty,
-      price: Number(entry.product.price),
+      price: getUnitPrice(entry.product, entry.qty),
       subtotal: entry.subtotal,
       note: entry.note
     })),
-    subtotalLista: totals.subtotalLista,
-    descuento: totals.descuento,
+    subtotal: totals.subtotal,
+    descuento: 0,
     total: totals.total,
     createdAt: new Date().toISOString()
   };
@@ -1262,29 +1188,35 @@ async function submitOrder(event) {
 
   try {
     const client = getSupabaseClient();
-    if (!client) {
-      throw new Error('No se pudo conectar con el sistema de pedidos.');
-    }
+    if (!client) throw new Error('No se pudo conectar con el sistema de pedidos.');
+
+    const comentario = [
+      `Pedido ${order.codigo}`,
+      modoTexto(order.modalidad),
+      order.modalidad === 'evento' ? `Fecha: ${fecha} · Lugar: ${lugar} · Invitados: ${invitados}` : null,
+      `Pago: ${order.pago}`,
+      nota ? `Nota: ${nota}` : null
+    ].filter(Boolean).join(' · ');
 
     const payload = {
       empresa_id: EMPRESA_ID,
       customer_name: nombre,
       customer_phone: telefono,
-      delivery_address: state.deliveryMode === 'delivery' ? direccion : `Retiro: ${pickupPoint}`,
-      comment: `Pedido ${order.codigo} · ${state.deliveryMode === 'delivery' ? 'Delivery' : `Retiro (${pickupPoint})`} · Pago: ${state.paymentMethod}${nota ? ` · Nota: ${nota}` : ''}`,
+      delivery_address: state.deliveryMode === 'delivery' ? direccion : (lugar || null),
+      comment: comentario,
       total: totals.total,
       status: 'pendiente',
       items: {
         codigo: order.codigo,
         modalidad: order.modalidad,
-        puntoRetiro: order.pickupPoint || null,
+        fecha: order.fecha || null,
+        lugar: order.lugar || null,
+        invitados: order.invitados || null,
         pago: order.pago,
-        envio: 'a coordinar',
         notas: nota,
-        subtotalLista: totals.subtotalLista,
-        descuento: totals.descuento,
+        subtotal: totals.subtotal,
+        descuento: 0,
         total: totals.total,
-        alias: order.pago === 'transferencia' ? BRAND.alias : null,
         detalle: order.items
       }
     };
@@ -1292,7 +1224,7 @@ async function submitOrder(event) {
     const { error } = await client.from('orders').insert(payload);
     if (error) throw error;
 
-    await saveCustomerRecord({ nombre, telefono, direccion: state.deliveryMode === 'delivery' ? direccion : null });
+    await saveCustomerRecord({ nombre, telefono, direccion: state.deliveryMode === 'delivery' ? direccion : lugar });
     state.lastOrder = { ...order, saved: true };
     persistLastOrder();
     clearCart();
@@ -1310,6 +1242,12 @@ async function submitOrder(event) {
   } finally {
     setButtonLoading(button, false);
   }
+}
+
+function modoTexto(modo) {
+  if (modo === 'evento') return 'Evento';
+  if (modo === 'takeaway') return 'Retiro a coordinar';
+  return 'Delivery';
 }
 
 async function saveCustomerRecord({ nombre, telefono, direccion }) {
@@ -1355,7 +1293,7 @@ async function saveCustomerRecord({ nombre, telefono, direccion }) {
 
 function makeOrderCode() {
   const random = Math.floor(1000 + Math.random() * 9000);
-  return `#1460-${random}`;
+  return `#TAM-${random}`;
 }
 
 function persistLastOrder() {
@@ -1368,25 +1306,9 @@ function showSuccessModal(order, saved) {
   const content = document.getElementById('successContent');
   if (!content) return;
 
-  const modal = order.modalidad === 'delivery'
-    ? 'Delivery a domicilio'
-    : `Retiro: ${order.pickupPoint || 'En local'}`;
-  const pago = order.pago === 'efectivo'
-    ? 'Efectivo · 10% OFF'
-    : `Transferencia · alias ${BRAND.alias}`;
-
-  const aliasCopyHTML = order.pago === 'transferencia'
-    ? `
-      <div class="alias-copy-box alias-copy-box-modal">
-        <div class="alias-copy-info">
-          <small>Transferí al alias</small>
-          <strong>${escapeHTML(BRAND.alias)}</strong>
-        </div>
-        <button type="button" class="btn-copy-alias" id="modalCopyAliasBtn">
-          📋 Copiar alias
-        </button>
-      </div>
-    `
+  const modal = modoTexto(order.modalidad);
+  const detalleEvento = order.modalidad === 'evento'
+    ? `<div class="success-summary-row"><span>${escapeHTML(order.lugar || 'Lugar a coordinar')}</span><strong>${order.invitados} invitados</strong></div>`
     : '';
 
   content.innerHTML = `
@@ -1396,7 +1318,6 @@ function showSuccessModal(order, saved) {
       ? 'Guardamos tu pedido. Tocá el botón verde para enviarlo por WhatsApp.'
       : 'Tocá el botón para enviar tu pedido por WhatsApp.'}</p>
     <span class="success-code">${escapeHTML(order.codigo)}</span>
-    ${aliasCopyHTML}
     <div class="success-summary">
       ${order.items.map((item) => `
         <div class="success-summary-row">
@@ -1406,16 +1327,11 @@ function showSuccessModal(order, saved) {
       `).join('')}
       <div class="success-summary-row">
         <span>${escapeHTML(modal)}</span>
-        <strong>${escapeHTML(pago)}</strong>
+        <strong>Pago a coordinar</strong>
       </div>
-      ${order.descuento > 0 ? `
-        <div class="success-summary-row discount">
-          <span>Descuento efectivo (10% OFF)</span>
-          <strong>-${formatPrice(order.descuento)}</strong>
-        </div>
-      ` : ''}
+      ${detalleEvento}
       <div class="success-summary-row total">
-        <span>Total a pagar</span>
+        <span>Total</span>
         <strong>${formatPrice(order.total)}</strong>
       </div>
     </div>
@@ -1427,10 +1343,6 @@ function showSuccessModal(order, saved) {
       </button>
     </div>
   `;
-
-  document.getElementById('modalCopyAliasBtn')?.addEventListener('click', (event) => {
-    copyAliasToClipboard(BRAND.alias, event.currentTarget);
-  });
 
   document.getElementById('successContinueBtn')?.addEventListener('click', () => {
     closeSuccessModal();
@@ -1453,21 +1365,23 @@ function closeSuccessModal() {
 function buildWhatsAppMessage(order) {
   const lines = [];
   lines.push(`🍕 *PEDIDO ${order.codigo}*`);
-  lines.push('*14-60 Pizzas Caseras LPH*');
+  lines.push('*Tamarindo · Pizza napolitana*');
   lines.push('');
   lines.push(`👤 *Cliente:* ${order.nombre}`);
   lines.push(`📞 *Teléfono:* ${order.telefono}`);
-  lines.push(`🚚 *Modalidad:* ${order.modalidad === 'delivery' ? 'Delivery' : 'Retiro en local'}`);
+  lines.push(`🚚 *Modalidad:* ${modoTexto(order.modalidad)}`);
 
   if (order.modalidad === 'delivery') {
     lines.push(`📍 *Dirección:* ${order.direccion}`);
+  } else if (order.modalidad === 'evento') {
+    lines.push(`📅 *Fecha:* ${order.fecha || 'A confirmar'}`);
+    lines.push(`📍 *Lugar:* ${order.lugar || 'A confirmar'}`);
+    lines.push(`👥 *Invitados:* ${order.invitados || 'A confirmar'}`);
   } else {
-    lines.push(`📍 *Punto de retiro:* ${order.pickupPoint || 'Coordinar punto de retiro'}`);
+    lines.push('📍 *Retiro:* a coordinar por WhatsApp');
   }
 
-  lines.push(`💳 *Pago:* ${order.pago === 'efectivo'
-    ? 'Efectivo (10% de descuento)'
-    : `Transferencia (alias ${BRAND.alias})`}`);
+  lines.push('💳 *Pago:* a coordinar por WhatsApp');
   lines.push('');
   lines.push('🧾 *Detalle:*');
 
@@ -1477,16 +1391,8 @@ function buildWhatsAppMessage(order) {
   });
 
   lines.push('');
-  lines.push(`Subtotal: ${formatPrice(order.subtotalLista)}`);
-  if (order.descuento > 0) {
-    lines.push(`Descuento efectivo (10%): -${formatPrice(order.descuento)}`);
-  }
-  lines.push('Envío: A coordinar');
+  lines.push(`Subtotal: ${formatPrice(order.subtotal || order.subtotalLista || order.total)}`);
   lines.push(`*Total: ${formatPrice(order.total)}*`);
-
-  if (order.pago === 'transferencia') {
-    lines.push(`Alias para transferir: *${BRAND.alias}*`);
-  }
 
   if (order.nota) {
     lines.push('');
@@ -1499,7 +1405,7 @@ function buildWhatsAppMessage(order) {
 function buildCartWhatsAppLink() {
   const entries = getCartEntries();
   if (!entries.length) {
-    return `https://wa.me/${BRAND.whatsapp}?text=${encodeURIComponent('Hola, quiero hacer un pedido de pizzas.')}`;
+    return `https://wa.me/${BRAND.whatsapp}?text=${encodeURIComponent('Hola, quiero hacer un pedido de pizzas napolitanas.')}`;
   }
 
   const totals = getCartTotals(entries);
@@ -1511,15 +1417,7 @@ function buildCartWhatsAppLink() {
   });
 
   lines.push('');
-  lines.push(`Subtotal: ${formatPrice(totals.subtotalLista)}`);
-  if (totals.descuento > 0) {
-    lines.push(`Descuento efectivo (10%): -${formatPrice(totals.descuento)}`);
-    lines.push(`*Total en efectivo: ${formatPrice(totals.total)}*`);
-  } else {
-    lines.push(`*Total transferencia: ${formatPrice(totals.total)}* (alias ${BRAND.alias})`);
-  }
-  lines.push('Envío: A coordinar');
-
+  lines.push(`*Total: ${formatPrice(totals.total)}*`);
   return `https://wa.me/${BRAND.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`;
 }
 
@@ -1556,23 +1454,13 @@ async function loadFromSupabase() {
     }
 
     const [productsResult, bannersResult] = await Promise.all([
-      client
-        .from('products')
-        .select('*')
-        .eq('empresa_id', EMPRESA_ID)
-        .eq('is_active', true)
-        .order('sort_order'),
-      client
-        .from('banners')
-        .select('*')
-        .eq('empresa_id', EMPRESA_ID)
-        .eq('is_active', true)
-        .order('sort_order')
+      client.from('products').select('*').eq('empresa_id', EMPRESA_ID).eq('is_active', true).order('sort_order'),
+      client.from('banners').select('*').eq('empresa_id', EMPRESA_ID).eq('is_active', true).order('sort_order')
     ]);
 
     if (!productsResult.error && productsResult.data?.length) {
       const previousMenu = state.menu;
-      const nextMenu = productsResult.data.map((product) => mapSupabaseProduct(product));
+      const nextMenu = productsResult.data.map(mapSupabaseProduct);
       migrateCartByName(previousMenu, nextMenu);
       state.menu = nextMenu;
       saveCart();
@@ -1605,8 +1493,10 @@ function productUnit(product) {
 function mapSupabaseProduct(product) {
   const category = state.categories.find((cat) => cat.id === product.category_id);
   const unit = product.unit_type || 'unidad';
+  const minQty = unit === 'persona' ? 20 : 1;
   return {
     id: product.id,
+    code: product.code || '',
     cat: category?.slug || 'otros',
     name: product.name,
     desc: product.description || '',
@@ -1615,7 +1505,8 @@ function mapSupabaseProduct(product) {
     prepTime: product.prep_tiempo || '',
     price: Number(product.price || 0),
     unit,
-    minQty: unit === 'persona' ? 25 : 1,
+    minQty,
+    tiers: product.code === 'TAM-EV-01' ? EVENT_TIERS : null,
     image: product.image_url || fallbackImage(category?.slug),
     emoji: product.emoji || '🍕',
     tags: Array.isArray(product.tags) ? product.tags : [],
@@ -1724,7 +1615,6 @@ function setFooterYear() {
   if (year) year.textContent = String(new Date().getFullYear());
 }
 
-
 /* ─── OCULTAR BADGE INYECTADO DE NETLIFY ─────────────────────────────────── */
 (function suppressNetlifyBadge() {
   const ALLOWED_BODY_IDS = new Set([
@@ -1742,9 +1632,7 @@ function setFooterYear() {
 
   function cleanNetlifyNodes() {
     Array.from(document.documentElement?.children || []).forEach((node) => {
-      if (node.tagName !== 'HEAD' && node.tagName !== 'BODY') {
-        node.remove();
-      }
+      if (node.tagName !== 'HEAD' && node.tagName !== 'BODY') node.remove();
     });
 
     Array.from(document.body?.children || []).forEach((node) => {

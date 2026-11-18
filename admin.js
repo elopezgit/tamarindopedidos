@@ -1,12 +1,12 @@
 'use strict';
 
-/* ─── 14-60 Pizzas Caseras LPH · Panel de Administración v2 ──────────────── */
+/* ─── Tamarindo · Panel de Administración ───────────────────── */
 
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = '123456';
-const ADMIN_SESSION_KEY = 'p1460_admin_session';
-const ADMIN_CACHE_KEY = 'p1460_admin_cache_v2';
-const ADMIN_THEME_KEY = 'p1460_admin_theme_light_v1';
+const ADMIN_SESSION_KEY = 'tamarindo_admin_session';
+const ADMIN_CACHE_KEY = 'tamarindo_admin_cache_v2';
+const ADMIN_THEME_KEY = 'tamarindo_admin_theme_light_v1';
 
 const STATUS_LABELS = {
   pendiente: 'Pendiente',
@@ -23,30 +23,21 @@ const CATALOG_VIEWS = ['productos', 'categorias', 'asignacion', 'banners'];
 const ALL_VIEWS = ['resumen', 'pedidos', 'productos', 'categorias', 'asignacion', 'banners', 'clientes'];
 
 const PRODUCT_IMAGE_PRESETS = [
-  { label: 'Muzzarella', path: 'img/productos/muzzarella.webp' },
-  { label: 'Extra Muzza', path: 'img/productos/extra-muzza.webp' },
-  { label: 'Especial Jamón', path: 'img/productos/especial-jamon.webp' },
-  { label: '4 Quesos', path: 'img/productos/4-quesos.webp' },
-  { label: 'Fugazzetta Caram.', path: 'img/productos/fugazzetta-caramelizada.webp' },
-  { label: 'Fugazza Especial', path: 'img/productos/fugazza-especial.webp' },
-  { label: 'Calabresa', path: 'img/productos/calabresa.webp' },
-  { label: 'Provenzal', path: 'img/productos/provenzal.webp' },
-  { label: 'Roquefort y Nueces', path: 'img/productos/roquefort-nueces.webp' },
-  { label: 'Cheddar', path: 'img/productos/cheddar.webp' },
-  { label: 'Turca', path: 'img/productos/turca.webp' },
-  { label: 'Huevo', path: 'img/productos/huevo.webp' },
-  { label: 'Combo 2 Muzzas', path: 'img/productos/combo-muzzarella.webp' },
-  { label: 'Combo 4 Clásicas', path: 'img/productos/combo-clasicas.webp' },
-  { label: 'Pizza Party', path: 'img/productos/pizza-party.webp' }
+  { label: 'Margherita', path: 'img/productos/margherita.webp' },
+  { label: 'Jamón cocido', path: 'img/productos/jamon-cocido.webp' },
+  { label: 'Jamón cocido (detalle)', path: 'img/productos/jamon-cocido-detalle.webp' },
+  { label: 'Queso azul y repollo', path: 'img/productos/queso-azul-repollo.webp' },
+  { label: 'Zapallo cabutia y romero', path: 'img/productos/zapallo-cabutia-romero.webp' },
+  { label: 'Pepperoni y tamarindo', path: 'img/productos/pepperoni-tamarindo.webp' },
+  { label: 'Pepperoni (detalle)', path: 'img/productos/pepperoni-detalle.webp' }
 ];
 
 const BANNER_IMAGE_PRESETS = [
-  { label: 'Banner LPH', path: 'img/banners/banner-lph.webp' },
-  { label: 'Banner Pizza Party', path: 'img/banners/banner-pizza-party.webp' },
-  { label: 'Banner Clásicas', path: 'img/banners/banner-clasicas.webp' },
-  { label: 'Extra Muzza', path: 'img/productos/extra-muzza.webp' },
-  { label: 'Combo Muzzarella', path: 'img/productos/combo-muzzarella.webp' },
-  { label: 'Pizza Party Foto', path: 'img/productos/pizza-party.webp' }
+  { label: 'Banner Napolitana', path: 'img/banners/banner-napolitana.webp' },
+  { label: 'Banner Eventos', path: 'img/banners/banner-eventos.webp' },
+  { label: 'Banner Sabores', path: 'img/banners/banner-sabores.webp' },
+  { label: 'Foto Margherita', path: 'img/productos/margherita.webp' },
+  { label: 'Foto Pepperoni', path: 'img/productos/pepperoni-detalle.webp' }
 ];
 
 const CATEGORY_ICON_PRESETS = ['🍕', '⭐', '🧅', '🎉', '🧀', '🌶️', '🌿', '🍖', '🔥', '🥟', '🥤', '🍺', '🍽️'];
@@ -186,6 +177,7 @@ function bindAdminEvents() {
     openProductModal();
   });
   document.getElementById('bulkPriceBtn')?.addEventListener('click', () => openBulkPriceModal());
+  document.getElementById('seedProductsBtn')?.addEventListener('click', seedDefaultProducts);
 
   document.getElementById('newCategoryBtn')?.addEventListener('click', () => openCategoryModal());
   document.getElementById('quickNewCategoryBtn')?.addEventListener('click', () => {
@@ -665,8 +657,8 @@ function renderOrders() {
 
   body.innerHTML = orders.map((order) => {
     const meta = getOrderMeta(order);
-    const entrega = meta.modalidad === 'delivery' ? '🛵 Delivery' : '🏪 Retiro';
-    const pago = meta.pago === 'efectivo' ? '💵 Efectivo' : meta.pago === 'transferencia' ? '🏦 Transferencia' : '—';
+    const entrega = modoPedidoLabel(meta.modalidad, true);
+    const pago = meta.pago ? '💬 A coordinar' : '—';
     return `
       <tr data-order-open="${escapeAttr(order.id)}" tabindex="0" role="button">
         <td>
@@ -679,7 +671,7 @@ function renderOrders() {
         </td>
         <td>
           <span class="cell-main">${entrega}</span>
-          <span class="cell-sub">${escapeHTML(meta.modalidad === 'delivery' ? (order.delivery_address || 'Sin dirección') : 'Retiro en local')}</span>
+          <span class="cell-sub">${escapeHTML(meta.modalidad === 'delivery' ? (order.delivery_address || 'Sin dirección') : (meta.lugar || 'A coordinar'))}</span>
         </td>
         <td>${pago}</td>
         <td><strong>${formatPrice(getOrderTotal(order))}</strong></td>
@@ -698,8 +690,8 @@ function renderOrders() {
 function renderKanbanOrderCard(order, colConfig) {
   const meta = getOrderMeta(order);
   const currentKey = normalizeKanbanStatus(order.status);
-  const entregaBadge = meta.modalidad === 'delivery' ? '🛵 Delivery' : '🏪 Retiro';
-  const pagoBadge = meta.pago === 'efectivo' ? '💵 Efectivo' : meta.pago === 'transferencia' ? '🏦 Transf.' : 'Pago s/d';
+  const entregaBadge = modoPedidoLabel(meta.modalidad, true);
+  const pagoBadge = meta.pago ? '💬 A coordinar' : 'Pago s/d';
 
   const itemsSummary = meta.items.length
     ? meta.items.slice(0, 4).map((item) => `<li><strong>${Number(item.qty || 1)}×</strong> ${escapeHTML(item.name || 'Producto')}</li>`).join('')
@@ -731,7 +723,9 @@ function renderKanbanOrderCard(order, colConfig) {
 
       ${meta.modalidad === 'delivery' && order.delivery_address
         ? `<p class="kanban-card-address">📍 ${escapeHTML(order.delivery_address)}</p>`
-        : ''}
+        : meta.modalidad === 'evento' && meta.lugar
+          ? `<p class="kanban-card-address">🎉 ${escapeHTML(meta.lugar)} · ${escapeHTML(meta.fecha || 'Fecha a confirmar')}</p>`
+          : ''}
 
       <ul class="kanban-card-items" data-order-open="${escapeAttr(order.id)}">
         ${itemsSummary}
@@ -837,7 +831,6 @@ function openOrderModal(orderId) {
   const meta = getOrderMeta(order);
   const status = normalizeStatus(order.status);
   const selectedStatus = status === 'en_preparacion' ? 'preparando' : status;
-  const alias = meta.pago === 'transferencia' ? `<div><span>Alias</span><strong>${escapeHTML(BRAND.alias)}</strong></div>` : '';
   const itemsRows = meta.items.length
     ? meta.items.map((item) => `
         <tr>
@@ -862,10 +855,10 @@ function openOrderModal(orderId) {
     <div class="order-detail-grid">
       <div><span>Cliente</span><strong>${escapeHTML(order.customer_name || 'Sin nombre')}</strong></div>
       <div><span>Teléfono</span><strong>${escapeHTML(order.customer_phone || '—')}</strong></div>
-      <div><span>Modalidad</span><strong>${meta.modalidad === 'delivery' ? 'Delivery' : 'Retiro en local'}</strong></div>
-      <div><span>Pago</span><strong>${meta.pago ? capitalize(meta.pago) : '—'}</strong></div>
-      <div class="span-2"><span>Dirección</span><strong>${escapeHTML(meta.modalidad === 'delivery' ? (order.delivery_address || 'Sin dirección') : 'Coordinar punto de retiro')}</strong></div>
-      ${alias}
+      <div><span>Modalidad</span><strong>${modoPedidoLabel(meta.modalidad, false)}</strong></div>
+      <div><span>Pago</span><strong>${meta.pago ? 'A coordinar por WhatsApp' : '—'}</strong></div>
+      <div class="span-2"><span>${meta.modalidad === 'evento' ? 'Lugar del evento' : 'Entrega'}</span><strong>${escapeHTML(meta.modalidad === 'delivery' ? (order.delivery_address || 'Sin dirección') : (meta.lugar || 'A coordinar'))}</strong></div>
+      ${meta.modalidad === 'evento' ? `<div><span>Fecha</span><strong>${escapeHTML(meta.fecha || 'A confirmar')}</strong></div><div><span>Invitados</span><strong>${escapeHTML(String(meta.invitados || '—'))}</strong></div>` : ''}
     </div>
 
     <table class="order-items">
@@ -875,7 +868,6 @@ function openOrderModal(orderId) {
 
     <div class="order-totals">
       <div><span>Subtotal</span><strong>${formatPrice(subtotal)}</strong></div>
-      ${discount > 0 ? `<div class="discount"><span>Descuento efectivo (10%)</span><strong>-${formatPrice(discount)}</strong></div>` : ''}
       <div class="total"><span>Total</span><strong>${formatPrice(total)}</strong></div>
     </div>
 
@@ -946,7 +938,7 @@ async function deleteOrder(orderId) {
 
   const meta = getOrderMeta(order);
   const label = meta.codigo || order.id;
-  if (!window.confirm(`¿Eliminar el pedido ${label} de 14-60 Pizzas Caseras LPH? Esta acción solo afecta a esta empresa y no se puede deshacer.`)) return;
+  if (!window.confirm(`¿Eliminar el pedido ${label} de Tamarindo? Esta acción solo afecta a esta empresa y no se puede deshacer.`)) return;
 
   if (client) {
     try {
@@ -1017,7 +1009,7 @@ function renderProducts() {
   }
 
   grid.innerHTML = products.map((product) => {
-    const image = product.image_url || 'img/productos/muzzarella.webp';
+    const image = product.image_url || 'img/productos/margherita.webp';
     const active = product.is_active !== false;
     const isHot = Boolean(product.hot);
     const catOptions = [
@@ -1029,7 +1021,7 @@ function renderProducts() {
       <article class="admin-product ${active ? '' : 'is-inactive'}">
         <div class="admin-product-media">
           <img src="${escapeAttr(image)}" alt="${escapeAttr(product.name)}" loading="lazy"
-            onerror="this.src='img/productos/muzzarella.webp'">
+            onerror="this.src='img/productos/margherita.webp'">
           <div class="product-badges-top">
             <span class="product-tag ${active ? 'is-on' : ''}">${active ? 'Activo' : 'Oculto'}</span>
             ${isHot ? '<span class="product-tag is-hot">🔥 Más pedida</span>' : ''}
@@ -1047,7 +1039,7 @@ function renderProducts() {
           <p>${escapeHTML(product.description || 'Sin descripción.')}</p>
           <div class="admin-product-prices">
             <strong>${formatPrice(product.price)}</strong>
-            <span>💵 ${formatPrice(getCashPrice(product.price))} efvo. ${product.unit_type === 'persona' ? '/ pers.' : ''}</span>
+            <span>${product.unit_type === 'persona' ? 'Precio por persona · tramos según invitados' : 'Pizza napolitana · precio final'}</span>
           </div>
           <div class="admin-product-actions">
             <button type="button" class="btn btn-primary btn-small" data-product-edit="${escapeAttr(product.id)}">✏️ Editar</button>
@@ -1075,7 +1067,7 @@ function openProductModal(productId = null, duplicateSource = null) {
     .join('');
 
   const basePrice = product ? Number(product.price || 0) : 10000;
-  const currentImage = product?.image_url || 'img/productos/muzzarella.webp';
+  const currentImage = product?.image_url || 'img/productos/margherita.webp';
   const nextOrder = isEditing
     ? Number(product?.sort_order || 0)
     : (adminState.products.reduce((max, p) => Math.max(max, Number(p.sort_order || 0)), 0) + 1);
@@ -1091,7 +1083,7 @@ function openProductModal(productId = null, duplicateSource = null) {
     <div class="modal-head">
       <p class="eyebrow">${isEditing ? 'Editar producto' : duplicateSource ? 'Duplicar producto' : 'Nuevo producto'}</p>
       <h2>${isEditing ? escapeHTML(product.name) : duplicateSource ? `Copia de ${escapeHTML(product.name)}` : 'Agregar producto al menú'}</h2>
-      <p>El precio ingresado es el de lista/transferencia. El precio con 10% OFF en efectivo se calcula automáticamente.</p>
+      <p>El precio ingresado es el final. No hay descuentos por forma de pago: se coordina por WhatsApp.</p>
     </div>
 
     <form id="productForm" data-product-id="${isEditing ? escapeAttr(product.id) : ''}">
@@ -1111,20 +1103,20 @@ function openProductModal(productId = null, duplicateSource = null) {
 
         <label class="field">
           <span>Código interno</span>
-          <input type="text" name="code" value="${escapeAttr(duplicateSource ? '' : (product?.code || ''))}" placeholder="Ej: 1460-016">
+          <input type="text" name="code" value="${escapeAttr(duplicateSource ? '' : (product?.code || ''))}" placeholder="Ej: TAM-006">
         </label>
 
         <label class="field">
           <span>Precio lista / transferencia (ARS) *</span>
           <input type="number" name="price" id="modalProductPriceInput" value="${basePrice}" min="0" step="100" required>
-          <small id="modalProductCashPreview">💵 En efectivo (10% OFF): <strong>${formatPrice(getCashPrice(basePrice))}</strong></small>
+          <small id="modalProductCashPreview">💵 Precio final: <strong>${formatPrice(basePrice)}</strong></small>
         </label>
 
         <label class="field">
           <span>Unidad de venta</span>
           <select name="unit_type">
             <option value="unidad" ${product?.unit_type === 'unidad' || !product?.unit_type ? 'selected' : ''}>Por unidad (Pizza / Combo)</option>
-            <option value="persona" ${product?.unit_type === 'persona' ? 'selected' : ''}>Por persona (Eventos / Party)</option>
+            <option value="persona" ${product?.unit_type === 'persona' ? 'selected' : ''}>Por persona (Eventos)</option>
           </select>
         </label>
 
@@ -1141,9 +1133,9 @@ function openProductModal(productId = null, duplicateSource = null) {
         <div class="field span-2 image-picker-box">
           <span>Imagen del producto (URL o ruta local)</span>
           <div class="image-input-preview-row">
-            <img id="modalImagePreview" class="modal-img-preview" src="${escapeAttr(currentImage)}" alt="Vista previa" onerror="this.src='img/productos/muzzarella.webp'">
+            <img id="modalImagePreview" class="modal-img-preview" src="${escapeAttr(currentImage)}" alt="Vista previa" onerror="this.src='img/productos/margherita.webp'">
             <div style="flex:1">
-              <input type="text" name="image_url" id="modalImageUrlInput" value="${escapeAttr(currentImage)}" placeholder="img/productos/muzzarella.webp o https://...">
+              <input type="text" name="image_url" id="modalImageUrlInput" value="${escapeAttr(currentImage)}" placeholder="img/productos/margherita.webp o https://...">
               <small>Podés pegar un link externo o elegir una foto del catálogo aquí abajo:</small>
             </div>
           </div>
@@ -1154,12 +1146,12 @@ function openProductModal(productId = null, duplicateSource = null) {
 
         <label class="field span-2">
           <span>Descripción corta (se ve en la tarjeta del menú)</span>
-          <textarea name="description" rows="2" maxlength="240" placeholder="Ej: Doble muzzarella y un borde dorado…">${escapeHTML(product?.description || '')}</textarea>
+          <textarea name="description" rows="2" maxlength="240" placeholder="Ej: Pomodoro, mozzarella, albahaca y aceite de oliva…">${escapeHTML(product?.description || '')}</textarea>
         </label>
 
         <label class="field span-2">
           <span>Ingredientes</span>
-          <textarea name="ingredients" rows="2" maxlength="300" placeholder="Masa artesanal, salsa de tomate, muzzarella…">${escapeHTML(product?.ingredients || '')}</textarea>
+          <textarea name="ingredients" rows="2" maxlength="300" placeholder="Pomodoro, mozzarella, albahaca, aceite de oliva…">${escapeHTML(product?.ingredients || '')}</textarea>
         </label>
 
         <label class="field">
@@ -1786,6 +1778,63 @@ async function seedDefaultCategories() {
   }
 }
 
+async function seedDefaultProducts() {
+  const client = getClient();
+  if (!client) {
+    showToast('Sin conexión con Supabase.', 'error');
+    return;
+  }
+
+  const categoriaPorSlug = new Map(adminState.categories.map((cat) => [cat.slug, cat.id]));
+  const existentes = new Set([
+    ...adminState.products.map((p) => normalizeText(p.name)),
+    ...adminState.products.map((p) => normalizeText(p.code || ''))
+  ]);
+
+  const faltantes = DEFAULT_MENU.filter((producto) => {
+    const categoriaId = categoriaPorSlug.get(producto.cat);
+    return Boolean(categoriaId)
+      && !existentes.has(normalizeText(producto.name))
+      && !existentes.has(normalizeText(producto.code || ''));
+  });
+
+  if (!faltantes.length) {
+    showToast('Todos los productos base ya están creados.');
+    return;
+  }
+
+  try {
+    const payload = faltantes.map((producto) => ({
+      empresa_id: EMPRESA_ID,
+      category_id: categoriaPorSlug.get(producto.cat),
+      name: producto.name,
+      code: producto.code || null,
+      description: producto.desc || '',
+      price: Number(producto.price || 0),
+      image_url: producto.image || null,
+      is_active: true,
+      sort_order: Number(producto.sort || 0),
+      emoji: producto.emoji || '🍕',
+      unit_type: producto.unit || 'unidad',
+      ingredients: producto.ingredients || '',
+      prep_descripcion: producto.prepDesc || '',
+      prep_tiempo: producto.prepTime || '',
+      tags: Array.isArray(producto.tags) ? producto.tags : [],
+      hot: Boolean(producto.hot),
+      rating: Number(producto.rating || 5)
+    }));
+
+    const { error } = await client.from('products').insert(payload);
+    if (error) throw error;
+
+    showToast(`Se cargaron ${payload.length} productos base.`);
+    await loadAdminData(false);
+  } catch (error) {
+    console.error('Error al cargar productos base:', error);
+    showToast(`No se pudieron crear: ${error.message}`, 'error');
+  }
+}
+
 /* ─── 3. CRUD DE ASIGNACIÓN DE PRODUCTOS A CATEGORÍAS ────────────────────── */
 
 function renderAssignmentView() {
@@ -1871,7 +1920,7 @@ function renderAssignmentView() {
         </td>
         <td>
           <div class="assign-prod-cell">
-            <img src="${escapeAttr(product.image_url || 'img/productos/muzzarella.webp')}" alt="" onerror="this.src='img/productos/muzzarella.webp'">
+            <img src="${escapeAttr(product.image_url || 'img/productos/margherita.webp')}" alt="" onerror="this.src='img/productos/margherita.webp'">
             <div>
               <span class="cell-main">${escapeHTML(product.emoji || '🍕')} ${escapeHTML(product.name)}</span>
               <span class="cell-sub">${escapeHTML(product.code || 'Sin código')}</span>
@@ -2038,7 +2087,7 @@ function openCategoryAssignModal(categoryId) {
     return `
       <label class="assign-modal-item ${belongsHere ? 'is-checked' : ''}">
         <input type="checkbox" name="product_ids" value="${escapeAttr(product.id)}" ${belongsHere ? 'checked' : ''}>
-        <img src="${escapeAttr(product.image_url || 'img/productos/muzzarella.webp')}" alt="" onerror="this.src='img/productos/muzzarella.webp'">
+        <img src="${escapeAttr(product.image_url || 'img/productos/margherita.webp')}" alt="" onerror="this.src='img/productos/margherita.webp'">
         <div class="assign-modal-item-info">
           <strong>${escapeHTML(product.name)}</strong>
           <span>${belongsHere ? `En ${escapeHTML(category.name)}` : `Actual: ${escapeHTML(otherCat)}`} · ${formatPrice(product.price)}</span>
@@ -2149,19 +2198,19 @@ function renderBannersAdmin() {
 
   grid.innerHTML = banners.map((banner, idx) => {
     const active = banner.is_active !== false;
-    const image = banner.image_url || 'img/banners/banner-lph.webp';
+    const image = banner.image_url || 'img/banners/banner-napolitana.webp';
     return `
       <article class="admin-banner-card ${active ? '' : 'is-inactive'}">
         <div class="admin-banner-preview">
           <img src="${escapeAttr(image)}" alt="${escapeAttr(banner.title || 'Banner')}" loading="lazy"
-            onerror="this.src='img/banners/banner-lph.webp'">
+            onerror="this.src='img/banners/banner-napolitana.webp'">
           <div class="admin-banner-overlay">
             <div class="product-badges-top">
               <span class="product-tag ${active ? 'is-on' : ''}">${active ? 'Activo' : 'Oculto'}</span>
               <span class="product-tag">Orden #${Number(banner.sort_order || 0)}</span>
             </div>
             <div class="admin-banner-copy">
-              <span>Promo 14-60</span>
+              <span>Promo Tamarindo</span>
               <h3>${escapeHTML(banner.title || 'Sin título')}</h3>
               <p>${escapeHTML(banner.subtitle || '')}</p>
             </div>
@@ -2191,7 +2240,7 @@ function openBannerModal(bannerId = null) {
     ? adminState.banners.find((row) => String(row.id) === String(bannerId))
     : null;
 
-  const currentImage = banner?.image_url || 'img/banners/banner-lph.webp';
+  const currentImage = banner?.image_url || 'img/banners/banner-napolitana.webp';
   const nextOrder = banner
     ? Number(banner.sort_order || 0)
     : (adminState.banners.reduce((max, b) => Math.max(max, Number(b.sort_order || 0)), 0) + 1);
@@ -2214,7 +2263,7 @@ function openBannerModal(bannerId = null) {
       <div class="form-grid">
         <label class="field">
           <span>Título principal *</span>
-          <input type="text" name="title" value="${escapeAttr(banner?.title || '')}" required maxlength="90" placeholder="Ej: Listas para hornear">
+          <input type="text" name="title" value="${escapeAttr(banner?.title || '')}" required maxlength="90" placeholder="Ej: Pizza napolitana">
         </label>
 
         <label class="field">
@@ -2224,15 +2273,15 @@ function openBannerModal(bannerId = null) {
 
         <label class="field span-2">
           <span>Subtítulo / Bajada</span>
-          <input type="text" name="subtitle" value="${escapeAttr(banner?.subtitle || '')}" maxlength="160" placeholder="Ej: Del freezer al horno, en 12-15 minutos.">
+          <input type="text" name="subtitle" value="${escapeAttr(banner?.subtitle || '')}" maxlength="160" placeholder="Ej: Hecha despacio. Comida rápido.">
         </label>
 
         <div class="field span-2 image-picker-box">
           <span>Imagen del banner (URL o ruta local) *</span>
           <div class="image-input-preview-row">
-            <img id="modalImagePreview" class="modal-img-preview is-banner" src="${escapeAttr(currentImage)}" alt="Vista previa" onerror="this.src='img/banners/banner-lph.webp'">
+            <img id="modalImagePreview" class="modal-img-preview is-banner" src="${escapeAttr(currentImage)}" alt="Vista previa" onerror="this.src='img/banners/banner-napolitana.webp'">
             <div style="flex:1">
-              <input type="text" name="image_url" id="modalImageUrlInput" value="${escapeAttr(currentImage)}" required placeholder="img/banners/banner-lph.webp">
+              <input type="text" name="image_url" id="modalImageUrlInput" value="${escapeAttr(currentImage)}" required placeholder="img/banners/banner-napolitana.webp">
               <small>Elegí una imagen de banner predefinida o pegá una URL:</small>
             </div>
           </div>
@@ -2246,7 +2295,7 @@ function openBannerModal(bannerId = null) {
           <input type="text" name="link" id="modalBannerLinkInput" value="${escapeAttr(banner?.link || '#menu')}" placeholder="#menu o https://wa.me/...">
           <div class="link-presets-row">
             <button type="button" class="btn btn-ghost btn-small" data-pick-link="#menu">🍕 Ir al menú (#menu)</button>
-            <button type="button" class="btn btn-ghost btn-small" data-pick-link="https://wa.me/5493874094801?text=Hola%2C%20quiero%20consultar%20por%20Pizza%20Party">🎉 WhatsApp Pizza Party</button>
+            <button type="button" class="btn btn-ghost btn-small" data-pick-link="https://wa.me/3815392681?text=Hola%2C%20quiero%20consultar%20por%20un%20evento">🎉 WhatsApp Eventos</button>
             <button type="button" class="btn btn-ghost btn-small" data-pick-link="https://wa.me/5493874094801?text=Hola%2C%20quiero%20hacer%20un%20pedido">💬 WhatsApp Directo</button>
           </div>
         </div>
@@ -2499,7 +2548,7 @@ function openCustomerModal(customerId = null) {
     <div class="modal-head">
       <p class="eyebrow">${customer ? 'Ficha de cliente' : 'Nuevo cliente'}</p>
       <h2>${customer ? escapeHTML(customer.name || 'Cliente') : 'Registrar cliente'}</h2>
-      <p>Los datos quedan asociados a 14-60 Pizzas Caseras LPH.</p>
+      <p>Los datos quedan asociados a Tamarindo.</p>
     </div>
 
     <form id="customerForm" data-customer-id="${customer ? escapeAttr(customer.id) : ''}">
@@ -2859,7 +2908,7 @@ function handleAdminInput(event) {
     const price = Number(event.target.value || 0);
     const preview = document.getElementById('modalProductCashPreview');
     if (preview) {
-      preview.innerHTML = `💵 En efectivo (10% OFF): <strong>${formatPrice(getCashPrice(price))}</strong>`;
+      preview.innerHTML = `💵 Precio final: <strong>${formatPrice(price)}</strong>`;
     }
     return;
   }
@@ -2950,6 +2999,12 @@ function closeModal() {
 
 /* ─── UTILIDADES ─────────────────────────────────────────────────────────── */
 
+function modoPedidoLabel(modo, emoji = false) {
+  if (modo === 'evento') return emoji ? '🎉 Evento' : 'Evento';
+  if (modo === 'takeaway') return emoji ? '🏪 Retiro' : 'Retiro a coordinar';
+  return emoji ? '🛵 Delivery' : 'Delivery';
+}
+
 function getOrderMeta(order) {
   const raw = order?.items;
   let items = [];
@@ -2962,7 +3017,7 @@ function getOrderMeta(order) {
     meta = raw;
   }
 
-  const subtotalLista = Number(meta.subtotalLista ?? order.total ?? 0);
+  const subtotalLista = Number(meta.subtotalLista ?? meta.subtotal ?? order.total ?? 0);
   const descuento = Number(meta.descuento ?? 0);
   const total = Number(meta.total ?? order.total ?? 0);
 
@@ -2970,7 +3025,10 @@ function getOrderMeta(order) {
     codigo: meta.codigo || `#${String(order?.id || '').slice(0, 8).toUpperCase()}`,
     modalidad: meta.modalidad || (order?.delivery_address ? 'delivery' : 'takeaway'),
     pago: meta.pago || '',
-    notas: meta.notas || '',
+    notas: meta.notas || meta.nota || '',
+    fecha: meta.fecha || '',
+    lugar: meta.lugar || '',
+    invitados: meta.invitados || '',
     items,
     subtotalLista,
     descuento,
@@ -2981,10 +3039,6 @@ function getOrderMeta(order) {
 function getOrderTotal(order) {
   const meta = getOrderMeta(order);
   return Number(meta.total || order.total || 0);
-}
-
-function getCashPrice(price) {
-  return Math.round(Number(price || 0) * (1 - Number(BRAND.cashDiscount || 0)));
 }
 
 function categoryName(categoryId) {
@@ -3028,7 +3082,7 @@ function customerWhatsApp(phone, code = '') {
   if (!digits) return '#';
   if (digits.startsWith('0')) digits = digits.slice(1);
   if (!digits.startsWith('54')) digits = `549${digits}`;
-  const text = code ? `Hola, te escribo por el pedido ${code} de 14-60 Pizzas Caseras LPH.` : 'Hola, te escribo de 14-60 Pizzas Caseras LPH.';
+  const text = code ? `Hola, te escribo por el pedido ${code} de Tamarindo.` : 'Hola, te escribo de Tamarindo.';
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }
 
@@ -3123,7 +3177,7 @@ function applyAdminTheme(theme) {
     button.setAttribute('aria-label', theme === 'dark' ? 'Usar tema claro' : 'Usar tema oscuro');
   }
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = theme === 'dark' ? '#08080a' : '#fffaf2';
+  if (meta) meta.content = theme === 'dark' ? '#013325' : '#EC681D';
 }
 
 

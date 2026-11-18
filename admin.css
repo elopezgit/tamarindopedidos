@@ -1,48 +1,50 @@
-/* ─── 14-60 Pizzas Caseras · panel de administración ─────────────────────── */
+/* ─── Tamarindo · panel de administración ─────────────────────── */
 
 :root {
-  --bg: #0b0b0e;
-  --bg-2: #121217;
-  --surface: #18181f;
-  --surface-2: #202029;
-  --surface-3: #2a2a35;
-  --text: #f9fafb;
-  --muted: #9ca3af;
-  --line: rgba(255, 255, 255, 0.09);
-  --line-strong: rgba(255, 255, 255, 0.18);
-  --red: #e51937;
-  --red-soft: rgba(229, 25, 55, 0.15);
-  --gold: #f59e0b;
-  --gold-soft: rgba(245, 158, 11, 0.14);
-  --green: #16a34a;
-  --green-soft: rgba(22, 163, 74, 0.15);
-  --blue: #3b82f6;
-  --orange: #f97316;
-  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  /* Paleta oficial Tamarindo */
+  --cream: #f6ebe2;
+  --bg: #013325;
+  --bg-2: #073f2e;
+  --surface: #0a4734;
+  --surface-2: #0f513c;
+  --surface-3: #155c45;
+  --text: #f6ebe2;
+  --muted: #a6c1b6;
+  --line: rgba(246, 235, 226, 0.1);
+  --line-strong: rgba(246, 235, 226, 0.2);
+  --red: #ec681d;
+  --red-soft: rgba(236, 104, 29, 0.18);
+  --gold: #df1517;
+  --gold-soft: rgba(223, 21, 23, 0.16);
+  --green: #ec681d;
+  --green-soft: rgba(236, 104, 29, 0.18);
+  --blue: #013325;
+  --orange: #ec681d;
+  --font-body: 'Urbanist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Urbanist', system-ui, -apple-system, sans-serif;
   --sidebar: 256px;
   --radius: 20px;
-  --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  --shadow: 0 12px 32px rgba(1, 51, 37, 0.35);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 html[data-theme="light"] {
-  --bg: #f4f5f8;
-  --bg-2: #ffffff;
-  --surface: #ffffff;
-  --surface-2: #f3f4f7;
-  --surface-3: #e8eaf0;
-  --text: #18181b;
-  --muted: #686b78;
-  --line: rgba(24, 24, 27, 0.08);
-  --line-strong: rgba(24, 24, 27, 0.16);
-  --red: #e51937;
-  --red-soft: rgba(229, 25, 55, 0.1);
-  --gold: #d97706;
-  --gold-soft: rgba(245, 158, 11, 0.14);
-  --green: #15803d;
-  --green-soft: rgba(21, 128, 61, 0.12);
-  --shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+  --bg: #f6ebe2;
+  --bg-2: #fffdfb;
+  --surface: #fffdfb;
+  --surface-2: #fdf7f2;
+  --surface-3: #f3e8dd;
+  --text: #013325;
+  --muted: #6d7d76;
+  --line: rgba(1, 51, 37, 0.1);
+  --line-strong: rgba(1, 51, 37, 0.2);
+  --red: #ec681d;
+  --red-soft: rgba(236, 104, 29, 0.12);
+  --gold: #df1517;
+  --gold-soft: rgba(223, 21, 23, 0.12);
+  --green: #013325;
+  --green-soft: rgba(1, 51, 37, 0.1);
+  --shadow: 0 6px 24px rgba(1, 51, 37, 0.1);
 }
 
 * {
@@ -111,8 +113,8 @@ img {
   place-items: center;
   padding: 28px 18px;
   background:
-    radial-gradient(650px 650px at 18% 10%, rgba(254, 0, 0, 0.2), transparent 60%),
-    radial-gradient(650px 650px at 88% 90%, rgba(252, 175, 21, 0.13), transparent 60%),
+    radial-gradient(650px 650px at 18% 10%, rgba(236, 104, 29, 0.24), transparent 60%),
+    radial-gradient(650px 650px at 88% 90%, rgba(223, 21, 23, 0.14), transparent 60%),
     var(--bg);
 }
 
@@ -121,13 +123,13 @@ img {
   padding: 38px 34px 30px;
   border: 1px solid var(--line);
   border-radius: 26px;
-  background: rgba(19, 19, 22, 0.92);
+  background: rgba(1, 51, 37, 0.92);
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
 }
 
 html[data-theme="light"] .login-card {
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(246, 235, 226, 0.94);
 }
 
 .login-logo {
@@ -167,7 +169,7 @@ html[data-theme="light"] .login-card {
 
 .login-error {
   margin-top: 12px;
-  color: #ff8a8a;
+  color: #df1517;
   font-size: 0.8rem;
   font-weight: 600;
   text-align: center;
@@ -267,12 +269,12 @@ input[type="checkbox"] {
 
 .btn-primary {
   background: var(--red);
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(229, 25, 55, 0.26);
+  color: #f6ebe2;
+  box-shadow: 0 4px 14px rgba(223, 21, 23, 0.26);
 }
 
 .btn-primary:hover {
-  background: #c8102e;
+  background: #df1517;
 }
 
 .btn-ghost {
@@ -287,14 +289,14 @@ input[type="checkbox"] {
 }
 
 .btn-danger {
-  border-color: rgba(229, 25, 55, 0.3);
+  border-color: rgba(223, 21, 23, 0.3);
   background: var(--red-soft);
   color: var(--red);
 }
 
 .btn-danger:hover {
   border-color: var(--red);
-  color: #fff;
+  color: #f6ebe2;
   background: var(--red);
 }
 
@@ -354,7 +356,7 @@ input[type="checkbox"] {
   padding: 24px 16px 18px;
   border-right: 1px solid var(--line);
   background: var(--bg-2);
-  box-shadow: 4px 0 24px rgba(15, 23, 42, 0.03);
+  box-shadow: 4px 0 24px rgba(1, 51, 37, 0.03);
   transition: transform 0.3s var(--ease);
 }
 
@@ -372,8 +374,9 @@ input[type="checkbox"] {
   height: 52px;
   border-radius: 14px;
   object-fit: contain;
-  background: #141210;
+  background: #f6ebe2;
   padding: 4px;
+  border: 1px solid rgba(236, 104, 29, 0.5);
 }
 
 .sidebar-brand strong {
@@ -439,14 +442,14 @@ input[type="checkbox"] {
 }
 
 .nav-link.active {
-  border-color: rgba(229, 25, 55, 0.2);
+  border-color: rgba(223, 21, 23, 0.2);
   background: var(--red-soft);
   color: var(--red);
 }
 
 .nav-link.active em {
   background: var(--red);
-  color: #fff;
+  color: #f6ebe2;
 }
 
 .sidebar-foot {
@@ -516,13 +519,14 @@ input[type="checkbox"] {
   margin-bottom: 24px;
   padding: 22px 26px;
   border-radius: 24px;
-  background: linear-gradient(135deg, #e51937 0%, #c80e2b 52%, #6d0b1d 100%);
-  color: #ffffff;
-  box-shadow: 0 12px 30px rgba(200, 14, 43, 0.22);
+  background: linear-gradient(135deg, #013325 0%, #044633 58%, #013325 100%);
+  color: #f6ebe2;
+  border: 1px solid rgba(236, 104, 29, 0.4);
+  box-shadow: 0 12px 30px rgba(1, 51, 37, 0.3);
 }
 
 .topbar .eyebrow {
-  color: #fde047;
+  color: #ec681d;
   margin-bottom: 4px;
 }
 
@@ -537,9 +541,9 @@ input[type="checkbox"] {
 }
 
 .topbar .menu-btn {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.28);
-  color: #fff;
+  background: rgba(246, 235, 226, 0.16);
+  border-color: rgba(246, 235, 226, 0.28);
+  color: #f6ebe2;
 }
 
 .topbar h1 {
@@ -548,12 +552,12 @@ input[type="checkbox"] {
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.03em;
-  color: #ffffff;
+  color: #f6ebe2;
 }
 
 .topbar-title p:last-child {
   margin-top: 4px;
-  color: rgba(255, 255, 255, 0.86);
+  color: rgba(246, 235, 226, 0.86);
   font-size: 0.82rem;
   font-weight: 500;
 }
@@ -565,27 +569,27 @@ input[type="checkbox"] {
 }
 
 .topbar-actions .btn-ghost {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.26);
-  color: #ffffff;
+  background: rgba(246, 235, 226, 0.16);
+  border-color: rgba(246, 235, 226, 0.26);
+  color: #f6ebe2;
   backdrop-filter: blur(8px);
 }
 
 .topbar-actions .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.26);
-  border-color: #ffffff;
-  color: #ffffff;
+  background: rgba(246, 235, 226, 0.26);
+  border-color: #f6ebe2;
+  color: #f6ebe2;
 }
 
 .topbar-actions .btn-primary {
-  background: #ffffff;
-  color: #c80e2b;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+  background: #f6ebe2;
+  color: var(--red);
+  box-shadow: 0 6px 18px rgba(1, 51, 37, 0.16);
 }
 
 .topbar-actions .btn-primary:hover {
-  background: #fef2f2;
-  color: #99081f;
+  background: #fdf7f2;
+  color: #df1517;
 }
 
 .view {
@@ -634,7 +638,7 @@ input[type="checkbox"] {
   flex: 0 0 48px;
   width: 48px;
   height: 48px;
-  border: 1px solid rgba(229, 25, 55, 0.12);
+  border: 1px solid rgba(223, 21, 23, 0.12);
   border-radius: 15px;
   background: var(--red-soft);
   font-size: 1.3rem;
@@ -760,7 +764,7 @@ input[type="checkbox"] {
 }
 
 .data-table tbody tr:hover {
-  background: rgba(252, 175, 21, 0.035);
+  background: rgba(236, 104, 29, 0.05);
 }
 
 .data-table tbody tr[data-order-open] {
@@ -811,13 +815,13 @@ input[type="checkbox"] {
 }
 
 .status-pendiente {
-  background: rgba(255, 159, 67, 0.14);
+  background: rgba(236, 104, 29, 0.14);
   color: var(--orange);
 }
 
 .status-confirmado,
 .status-preparando {
-  background: rgba(100, 168, 255, 0.14);
+  background: rgba(236, 104, 29, 0.14);
   color: var(--blue);
 }
 
@@ -834,7 +838,7 @@ input[type="checkbox"] {
 
 .status-cancelado {
   background: var(--red-soft);
-  color: #ff7272;
+  color: #df1517;
 }
 
 /* ─── TOOLBAR ────────────────────────────────────────────────────────────── */
@@ -866,7 +870,7 @@ input[type="checkbox"] {
   padding-left: 42px;
   border-radius: 999px;
   background: var(--surface);
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 4px 16px rgba(1, 51, 37, 0.04);
 }
 
 .toolbar select {
@@ -1020,7 +1024,7 @@ input[type="checkbox"] {
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.68);
+  background: rgba(1, 51, 37, 0.68);
   backdrop-filter: blur(6px);
 }
 
@@ -1066,7 +1070,7 @@ input[type="checkbox"] {
 
 .modal-close:hover {
   border-color: var(--red);
-  color: #fff;
+  color: #f6ebe2;
   background: var(--red);
 }
 
@@ -1270,8 +1274,8 @@ input[type="checkbox"] {
 }
 
 .toast.is-error {
-  border-color: rgba(254, 0, 0, 0.5);
-  color: #ff8585;
+  border-color: rgba(223, 21, 23, 0.5);
+  color: #df1517;
 }
 
 /* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
@@ -1300,7 +1304,7 @@ input[type="checkbox"] {
     position: fixed;
     inset: 0;
     z-index: 55;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(1, 51, 37, 0.6);
   }
 
   .main {
@@ -1398,15 +1402,15 @@ input[type="checkbox"] {
   }
 
   body {
-    background: #fff;
-    color: #000;
+    background: #f6ebe2;
+    color: #013325;
   }
 
   .modal-overlay {
     position: static;
     display: block;
     padding: 0;
-    background: #fff;
+    background: #f6ebe2;
   }
 
   .modal-card {
@@ -1476,10 +1480,10 @@ input[type="checkbox"] {
 }
 
 .catalog-tab.active {
-  border-color: rgba(229, 25, 55, 0.28);
+  border-color: rgba(223, 21, 23, 0.28);
   background: var(--red);
-  color: #fff;
-  box-shadow: 0 6px 16px rgba(229, 25, 55, 0.24);
+  color: #f6ebe2;
+  box-shadow: 0 6px 16px rgba(223, 21, 23, 0.24);
 }
 
 /* Accesos rápidos a los 4 CRUDs en Resumen */
@@ -1506,7 +1510,7 @@ input[type="checkbox"] {
 .shortcut-card:hover {
   transform: translateY(-2px);
   border-color: var(--red);
-  box-shadow: 0 10px 28px rgba(229, 25, 55, 0.12);
+  box-shadow: 0 10px 28px rgba(223, 21, 23, 0.12);
 }
 
 .shortcut-icon {
@@ -1583,8 +1587,8 @@ input[type="checkbox"] {
   right: 10px;
   padding: 3px 8px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.65);
-  color: #fff;
+  background: rgba(1, 51, 37, 0.65);
+  color: #f6ebe2;
   font-size: 0.62rem;
   font-weight: 700;
   backdrop-filter: blur(4px);
@@ -1649,7 +1653,7 @@ input[type="checkbox"] {
   place-items: center;
   width: 48px;
   height: 48px;
-  border: 1px solid rgba(229, 25, 55, 0.14);
+  border: 1px solid rgba(223, 21, 23, 0.14);
   border-radius: 15px;
   background: var(--red-soft);
   font-size: 1.5rem;
@@ -1713,7 +1717,7 @@ input[type="checkbox"] {
 
 .cat-prod-chip.is-more {
   color: var(--red);
-  border-color: rgba(229, 25, 55, 0.25);
+  border-color: rgba(223, 21, 23, 0.25);
 }
 
 /* CRUD de Asignación de Productos a Categorías */
@@ -1797,7 +1801,7 @@ input[type="checkbox"] {
 }
 
 .assign-cat-pill.is-warning {
-  border-color: rgba(254, 0, 0, 0.35);
+  border-color: rgba(223, 21, 23, 0.35);
 }
 
 .assign-cat-pill strong {
@@ -1840,8 +1844,8 @@ input[type="checkbox"] {
 
 .cat-badge.is-unassigned {
   background: var(--red-soft);
-  border-color: rgba(254, 0, 0, 0.3);
-  color: #ff6b6b;
+  border-color: rgba(223, 21, 23, 0.3);
+  color: #df1517;
 }
 
 .assign-row-select {
@@ -1938,7 +1942,7 @@ input[type="checkbox"] {
 .admin-banner-preview {
   position: relative;
   aspect-ratio: 16 / 8;
-  background: #141210;
+  background: #013325;
   overflow: hidden;
 }
 
@@ -1955,8 +1959,8 @@ input[type="checkbox"] {
   flex-direction: column;
   justify-content: space-between;
   padding: 14px;
-  background: linear-gradient(90deg, rgba(15, 12, 10, 0.86) 0%, rgba(15, 12, 10, 0.45) 60%, rgba(15, 12, 10, 0.15) 100%);
-  color: #fff;
+  background: linear-gradient(90deg, rgba(1, 51, 37, 0.86) 0%, rgba(1, 51, 37, 0.45) 60%, rgba(1, 51, 37, 0.15) 100%);
+  color: #f6ebe2;
 }
 
 .admin-banner-copy {
@@ -1969,7 +1973,7 @@ input[type="checkbox"] {
   padding: 2px 8px;
   border-radius: 999px;
   background: var(--red);
-  color: #fff;
+  color: #f6ebe2;
   font-size: 0.58rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -1986,7 +1990,7 @@ input[type="checkbox"] {
 
 .admin-banner-copy p {
   margin-top: 3px;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(246, 235, 226, 0.85);
   font-size: 0.74rem;
 }
 
@@ -2157,8 +2161,8 @@ input[type="checkbox"] {
 
 .view-mode-switch .btn.is-active {
   background: var(--red);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(229, 25, 55, 0.25);
+  color: #f6ebe2;
+  box-shadow: 0 4px 12px rgba(223, 21, 23, 0.25);
 }
 
 .kanban-board {
@@ -2279,7 +2283,7 @@ input[type="checkbox"] {
   border: 1px solid var(--line);
   border-radius: 15px;
   background: var(--surface);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 6px 18px rgba(1, 51, 37, 0.06);
   cursor: grab;
   min-width: 0;
   overflow: hidden;
