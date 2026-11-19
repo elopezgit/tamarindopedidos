@@ -40,6 +40,7 @@ function init() {
   renderBanners();
   renderMenu();
   renderContactChannels();
+  renderStoreInfo();
   renderEventInfo();
   renderCart();
   renderStoreStatus();
@@ -514,12 +515,32 @@ function renderContactChannels() {
           <h3>${escapeHTML(canal.name)}</h3>
           <p>${escapeHTML(canal.detail)}</p>
           <div class="pickup-links">
-            <a href="${escapeAttr(canal.url)}"${attrs}>Abrir ${escapeHTML(canal.name)}</a>
+            <a href="${escapeAttr(canal.url)}"${attrs}>${escapeHTML(canal.linkLabel || `Abrir ${canal.name}`)}</a>
           </div>
         </div>
       </article>
     `;
   }).join('');
+}
+
+function renderStoreInfo() {
+  const address = BRAND.address || '';
+  const shortAddress = address.split(',')[0] || 'Tucumán';
+
+  const headerText = document.getElementById('headerLocationText');
+  if (headerText) headerText.textContent = `${shortAddress} · ${BRAND.city}`;
+
+  const footerText = document.getElementById('footerAddressText');
+  if (footerText) footerText.textContent = address;
+
+  const modalAddress = document.getElementById('storeAddressText');
+  if (modalAddress) modalAddress.textContent = address || 'A coordinar por WhatsApp';
+
+  const mapsLink = document.getElementById('storeMapsLink');
+  if (mapsLink && BRAND.mapsUrl) mapsLink.href = BRAND.mapsUrl;
+
+  const phoneText = document.getElementById('storePhoneText');
+  if (phoneText) phoneText.textContent = BRAND.phoneDisplay || BRAND.whatsapp;
 }
 
 function renderEventInfo() {
@@ -999,9 +1020,13 @@ function renderCart() {
   if (checkoutButton) checkoutButton.disabled = entries.length === 0;
 }
 
+function pickupAddress() {
+  return BRAND.address || 'a coordinar por WhatsApp';
+}
+
 function shippingLabel() {
   if (state.deliveryMode === 'evento') return 'Lugar del evento';
-  if (state.deliveryMode === 'takeaway') return 'Retiro a coordinar';
+  if (state.deliveryMode === 'takeaway') return `Retiro en ${pickupAddress()}`;
   return 'A coordinar';
 }
 
@@ -1161,7 +1186,7 @@ async function submitOrder(event) {
     nombre,
     telefono,
     modalidad: state.deliveryMode,
-    direccion: state.deliveryMode === 'delivery' ? direccion : lugar,
+    direccion: state.deliveryMode === 'delivery' ? direccion : (state.deliveryMode === 'takeaway' ? pickupAddress() : lugar),
     fecha,
     lugar,
     invitados,
@@ -1202,7 +1227,7 @@ async function submitOrder(event) {
       empresa_id: EMPRESA_ID,
       customer_name: nombre,
       customer_phone: telefono,
-      delivery_address: state.deliveryMode === 'delivery' ? direccion : (lugar || null),
+      delivery_address: state.deliveryMode === 'delivery' ? direccion : (state.deliveryMode === 'takeaway' ? pickupAddress() : (lugar || null)),
       comment: comentario,
       total: totals.total,
       status: 'pendiente',
@@ -1246,7 +1271,7 @@ async function submitOrder(event) {
 
 function modoTexto(modo) {
   if (modo === 'evento') return 'Evento';
-  if (modo === 'takeaway') return 'Retiro a coordinar';
+  if (modo === 'takeaway') return 'Retiro en el local';
   return 'Delivery';
 }
 
@@ -1378,7 +1403,7 @@ function buildWhatsAppMessage(order) {
     lines.push(`📍 *Lugar:* ${order.lugar || 'A confirmar'}`);
     lines.push(`👥 *Invitados:* ${order.invitados || 'A confirmar'}`);
   } else {
-    lines.push('📍 *Retiro:* a coordinar por WhatsApp');
+    lines.push(`📍 *Retiro:* ${pickupAddress()}`);
   }
 
   lines.push('💳 *Pago:* a coordinar por WhatsApp');

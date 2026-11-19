@@ -2295,8 +2295,8 @@ function openBannerModal(bannerId = null) {
           <input type="text" name="link" id="modalBannerLinkInput" value="${escapeAttr(banner?.link || '#menu')}" placeholder="#menu o https://wa.me/...">
           <div class="link-presets-row">
             <button type="button" class="btn btn-ghost btn-small" data-pick-link="#menu">🍕 Ir al menú (#menu)</button>
-            <button type="button" class="btn btn-ghost btn-small" data-pick-link="https://wa.me/3813937777?text=Hola%2C%20quiero%20consultar%20por%20un%20evento">🎉 WhatsApp Eventos</button>
-            <button type="button" class="btn btn-ghost btn-small" data-pick-link="https://wa.me/5493874094801?text=Hola%2C%20quiero%20hacer%20un%20pedido">💬 WhatsApp Directo</button>
+            <button type="button" class="btn btn-ghost btn-small" data-pick-link="https://wa.me/${BRAND.whatsapp}?text=Hola%2C%20quiero%20consultar%20por%20un%20evento">🎉 WhatsApp Eventos</button>
+            <button type="button" class="btn btn-ghost btn-small" data-pick-link="https://wa.me/${BRAND.whatsapp}?text=Hola%2C%20quiero%20hacer%20un%20pedido">💬 WhatsApp Directo</button>
           </div>
         </div>
 
@@ -3001,7 +3001,7 @@ function closeModal() {
 
 function modoPedidoLabel(modo, emoji = false) {
   if (modo === 'evento') return emoji ? '🎉 Evento' : 'Evento';
-  if (modo === 'takeaway') return emoji ? '🏪 Retiro' : 'Retiro a coordinar';
+  if (modo === 'takeaway') return emoji ? '🏪 Retiro' : 'Retiro en el local';
   return emoji ? '🛵 Delivery' : 'Delivery';
 }
 

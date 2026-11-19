@@ -42,7 +42,7 @@
           <img src="img/logo/tamarindo-logo.webp" alt="Logo Tamarindo" class="brand-logo">
           <div class="location-copy">
             <span class="location-address">
-              <strong>Tucumán · Pizzas y eventos</strong>
+              <strong id="headerLocationText">Av. Nicolás Avellaneda 575 · Tucumán</strong>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </span>
             <span class="header-status" id="storeStatus" aria-live="polite">
@@ -194,7 +194,7 @@
     <!-- MINI BARRA FINAL DE LA APP -->
     <footer class="app-mini-footer">
       <div class="container app-mini-footer-inner">
-        <span>© <span id="footerYear"></span> Tamarindo · Tucumán</span>
+        <span>© <span id="footerYear"></span> Tamarindo · <span id="footerAddressText">Av. Nicolás Avellaneda 575, San Miguel de Tucumán</span></span>
         <div class="app-mini-links">
           <button type="button" class="link-btn" id="footerInfoBtn">Contacto y eventos</button>
           <span>·</span>
@@ -294,7 +294,7 @@
 
         <div class="cart-totals">
           <div><span>Subtotal</span><strong id="cartSubtotal">$0</strong></div>
-          <div><span>Entrega</span><strong id="cartShipping">A coordinar</strong></div>
+          <div><span>Entrega / retiro</span><strong id="cartShipping">A coordinar</strong></div>
           <div class="cart-total"><span>Total a pagar</span><strong id="cartTotal">$0</strong></div>
         </div>
 
@@ -323,9 +323,16 @@
 
         <div class="info-quick-cards">
           <div class="info-mini-card">
+            <span>📍</span>
+            <div>
+              <strong id="storeAddressText">Av. Nicolás Avellaneda 575, San Miguel de Tucumán</strong>
+              <small><a id="storeMapsLink" href="https://www.google.com/maps/search/?api=1&amp;query=Av.+Nicol%C3%A1s+Avellaneda+575%2C+San+Miguel+de+Tucum%C3%A1n" target="_blank" rel="noopener">Cómo llegar</a> · retiro de pizzas</small>
+            </div>
+          </div>
+          <div class="info-mini-card">
             <span>💬</span>
             <div>
-              <strong>381 393 7777</strong>
+              <strong id="storePhoneText">+54 9 381 393 7777</strong>
               <small>WhatsApp · pedidos y presupuestos</small>
             </div>
           </div>

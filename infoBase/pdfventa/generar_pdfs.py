@@ -221,7 +221,7 @@ def step(c, x, y, w, n, title, desc, h=54):
 
 
 def contact_box(c, x, y, w, dark=True):
-    h = 118
+    h = 140
     card(c, x, y - h, w, h, fill=GREEN if dark else WHITE,
          stroke=None if dark else LINE, r=12)
     c.setFillColor(ORANGE)
@@ -230,7 +230,8 @@ def contact_box(c, x, y, w, dark=True):
     c.setFillColor(ORANGE)
     c.drawString(x + 22, y - 24, "HABLEMOS")
     lines = [
-        "WhatsApp  ·  381 393 7777",
+        "WhatsApp  ·  +54 9 381 393 7777",
+        "Retiro  ·  Av. Nicolás Avellaneda 575, San Miguel de Tucumán",
         "Email  ·  tamarindopizzeria@gmail.com",
         "Instagram  ·  @tamarindo.pizzeria",
         "Tucumán, Argentina",

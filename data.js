@@ -11,20 +11,20 @@ const BRAND = {
   legalName: 'Tamarindo Pizzería',
   claim: 'El sabor de lo diferente',
   description: 'Pizza napolitana en Tucumán. Masa fresca, horno napolitano y catering para eventos.',
-  phone: '3813937777',
-  phoneDisplay: '381 393 7777',
-  whatsapp: '3813937777',
+  phone: '5493813937777',
+  phoneDisplay: '+54 9 381 393 7777',
+  whatsapp: '5493813937777',
   email: 'tamarindopizzeria@gmail.com',
   instagram: 'https://www.instagram.com/tamarindo.pizzeria',
   facebook: '',
   city: 'Tucumán',
-  address: '',
-  mapsUrl: '',
+  address: 'Av. Nicolás Avellaneda 575, San Miguel de Tucumán',
+  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Av.+Nicol%C3%A1s+Avellaneda+575%2C+San+Miguel+de+Tucum%C3%A1n',
   logo: 'img/logo/tamarindo-logo.webp',
   favicon: 'img/logo/tamarindo-favicon.png',
   hours: [],
-  scheduleText: 'Horarios y pedidos a coordinar por WhatsApp',
-  delivery: 'Delivery y retiro a coordinar',
+  scheduleText: 'Retiro en Av. Nicolás Avellaneda 575 · Horarios a coordinar por WhatsApp',
+  delivery: 'Retiro en Av. Nicolás Avellaneda 575 · Delivery a coordinar',
   payments: ['A coordinar por WhatsApp'],
   eventService: {
     production: '3 hs de producción en vivo',
@@ -52,8 +52,15 @@ const BRAND = {
 
 const CONTACT_CHANNELS = [
   {
+    name: 'Retiro en el local',
+    detail: BRAND.address,
+    icon: '📍',
+    url: BRAND.mapsUrl,
+    linkLabel: 'Cómo llegar'
+  },
+  {
     name: 'WhatsApp',
-    detail: '381 393 7777',
+    detail: BRAND.phoneDisplay,
     icon: '💬',
     url: `https://wa.me/${BRAND.whatsapp}?text=${encodeURIComponent('Hola Tamarindo, quiero consultar por sus pizzas / eventos.')}`
   },
