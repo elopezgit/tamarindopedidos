@@ -19,7 +19,7 @@ Identidad tomada del *Branding Opción 4* incluido en `infoBase/`:
 - **Portada estilo app de delivery** con hero de pizza napolitana, buscador, categorías y carrusel de banners.
 - **Carta de 5 pizzas** (Margherita, Jamón cocido, Queso azul y repollo morado, Zapallo cabutia y romero, Pepperoni y tamarindo) con precios de `infoBase/infovarios.txt`.
 - **Eventos privados**: Solo pizza (desde $12.500/persona según cantidad de invitados), Experiencia completa ($20.000/persona) y extra Panacota (+$3.000/persona), según el presupuesto v4 de `infoBase/`.
-- **Pedidos por WhatsApp** con carrito lateral en escritorio y barra flotante en móviles. Sin descuentos ni alias: el pago se coordina por WhatsApp.
+- **Pedidos por WhatsApp** con carrito lateral en escritorio y barra flotante en móviles. El cliente elige la forma de pago: efectivo o transferencia al alias `tamarindo.pizzeria` (copiable desde el checkout y el modal de contacto). Sin descuentos.
 - **Panel de administración (`admin.html`)** para gestionar pedidos, clientes, productos, categorías, asignaciones y banners en Supabase.
 
 > Los archivos de `infoBase/` son la fuente de verdad de la marca: PDFs de branding y presupuestos, fotos reales de las pizzas y `infovarios.txt` con los precios.

@@ -74,7 +74,7 @@
           <!-- Buscador píldora blanco con botón circular naranja -->
           <div class="py-search-pill-wrap">
             <label class="py-search-pill" for="menuSearch">
-              <input type="search" id="menuSearch" placeholder="Pizzas, ingredientes o eventos…" autocomplete="off">
+              <input type="search" id="menuSearch" placeholder="Pizzas o ingredientes…" autocomplete="off">
               <span class="py-search-submit" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               </span>
@@ -159,7 +159,6 @@
               <div class="side-mode-switch" id="sideDeliveryToggle" role="group" aria-label="Modalidad de entrega">
                 <button type="button" class="side-mode-btn active" data-mode="delivery">🛵 Delivery</button>
                 <button type="button" class="side-mode-btn" data-mode="takeaway">🏠 Retiro</button>
-                <button type="button" class="side-mode-btn" data-mode="evento">🎉 Evento</button>
               </div>
 
               <div id="sideCartEmpty" class="side-cart-empty">
@@ -243,28 +242,8 @@
           <div class="segmented" id="deliveryToggle">
             <button type="button" class="segmented-btn active" data-mode="delivery">🛵 Delivery</button>
             <button type="button" class="segmented-btn" data-mode="takeaway">🏠 Retiro</button>
-            <button type="button" class="segmented-btn" data-mode="evento">🎉 Evento</button>
           </div>
         </fieldset>
-
-        <!-- Datos específicos cuando elige Evento -->
-        <div class="field-group" id="eventFields" hidden>
-          <div class="field-row">
-            <label class="field">
-              <span>Fecha del evento</span>
-              <input type="date" id="fFecha" name="fecha">
-            </label>
-            <label class="field">
-              <span>Cantidad de invitados</span>
-              <input type="number" id="fInvitados" name="invitados" min="20" step="1" placeholder="20" inputmode="numeric">
-            </label>
-          </div>
-          <label class="field">
-            <span>Lugar del evento</span>
-            <input type="text" id="fLugar" name="lugar" placeholder="Barrio, casa, salón o dirección">
-          </label>
-          <p class="field-hint">Contanos fecha, lugar e invitados y te enviamos el presupuesto final.</p>
-        </div>
 
         <label class="field" id="addressField">
           <span>Dirección de entrega</span>
@@ -284,7 +263,24 @@
 
         <fieldset class="field-group">
           <legend>Forma de pago</legend>
+          <div class="payment-options" id="paymentOptions" role="radiogroup" aria-label="Forma de pago">
+            <label class="payment-option">
+              <input type="radio" name="pago" value="efectivo" checked>
+              <span>💵 Efectivo</span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="pago" value="transferencia">
+              <span>🏦 Transferencia</span>
+            </label>
+          </div>
           <p class="payment-info payment-info-simple" id="paymentInfo"></p>
+          <div class="alias-copy-box" id="aliasBox" hidden>
+            <div class="alias-copy-info">
+              <small>Alias para transferir</small>
+              <strong id="aliasValue">tamarindo.pizzeria</strong>
+            </div>
+            <button type="button" class="btn-copy-alias" id="copyAliasBtn">Copiar alias</button>
+          </div>
         </fieldset>
 
         <label class="field">
@@ -342,6 +338,14 @@
               <strong>tamarindopizzeria@gmail.com</strong>
               <small>Instagram: @tamarindo.pizzeria</small>
             </div>
+          </div>
+          <div class="info-mini-card">
+            <span>🏦</span>
+            <div>
+              <strong id="modalAliasValue">tamarindo.pizzeria</strong>
+              <small>Alias para transferencias</small>
+            </div>
+            <button type="button" class="btn-copy-alias" id="copyAliasModalBtn">Copiar</button>
           </div>
         </div>
 

@@ -8,14 +8,15 @@ const THEME_KEY = 'tamarindo_theme_light_v1';
 const LAST_ORDER_KEY = 'tamarindo_last_order';
 
 const state = {
-  categories: clone(DEFAULT_CATEGORIES),
-  menu: clone(DEFAULT_MENU),
+  categories: clone(DEFAULT_CATEGORIES).filter((cat) => cat.slug !== 'eventos'),
+  menu: clone(DEFAULT_MENU).filter((product) => product.cat !== 'eventos'),
   banners: clone(DEFAULT_BANNERS),
   cart: loadJSON(CART_KEY, {}),
   customer: loadJSON(CUSTOMER_KEY, {}),
   currentCat: 'todos',
   search: '',
   deliveryMode: 'delivery',
+  paymentMethod: 'efectivo',
   modalProductId: null,
   modalQty: 1,
   lastOrder: loadJSON(LAST_ORDER_KEY, null),
@@ -23,8 +24,23 @@ const state = {
   toastTimer: null
 };
 
-if (state.customer.deliveryMode === 'takeaway' || state.customer.deliveryMode === 'evento') {
-  state.deliveryMode = state.customer.deliveryMode;
+if (state.customer.deliveryMode === 'takeaway') state.deliveryMode = 'takeaway';
+if (state.customer.paymentMethod === 'transferencia') state.paymentMethod = 'transferencia';
+
+function isEventProduct(product) {
+  return Boolean(product) && (product.cat === 'eventos' || String(product.code || '').startsWith('TAM-EV-'));
+}
+
+function dropEventItemsFromCart() {
+  let changed = false;
+  Object.keys(state.cart).forEach((id) => {
+    const product = state.menu.find((item) => String(item.id) === String(id));
+    if (isEventProduct(product) || String(id).startsWith('default-evento-')) {
+      delete state.cart[id];
+      changed = true;
+    }
+  });
+  if (changed) saveCart();
 }
 
 /* ─── ARRANQUE ───────────────────────────────────────────────────────────── */
@@ -36,6 +52,8 @@ function init() {
   initTheme();
   bindEvents();
   hydrateCustomerForm();
+  dropEventItemsFromCart();
+  updatePaymentUI();
   renderCategories();
   renderBanners();
   renderMenu();
@@ -130,10 +148,14 @@ function bindEvents() {
     applyDeliveryMode(button.dataset.mode);
   });
 
-  ['fNombre', 'fTel', 'fDir', 'fNota', 'fFecha', 'fLugar', 'fInvitados'].forEach((id) => {
+  ['fNombre', 'fTel', 'fDir', 'fNota'].forEach((id) => {
     document.getElementById(id)?.addEventListener('input', saveCustomerDraft);
     document.getElementById(id)?.addEventListener('change', saveCustomerDraft);
   });
+
+  document.getElementById('paymentOptions')?.addEventListener('change', onPaymentMethodChange);
+  document.getElementById('copyAliasBtn')?.addEventListener('click', (event) => copyAlias(event.currentTarget));
+  document.getElementById('copyAliasModalBtn')?.addEventListener('click', (event) => copyAlias(event.currentTarget));
 
   document.getElementById('checkoutForm')?.addEventListener('submit', submitOrder);
 
@@ -541,6 +563,9 @@ function renderStoreInfo() {
 
   const phoneText = document.getElementById('storePhoneText');
   if (phoneText) phoneText.textContent = BRAND.phoneDisplay || BRAND.whatsapp;
+
+  const modalAlias = document.getElementById('modalAliasValue');
+  if (modalAlias) modalAlias.textContent = BRAND.transferAlias || '';
 }
 
 function renderEventInfo() {
@@ -653,7 +678,6 @@ function renderMenu() {
 
 function getTiers(product) {
   if (Array.isArray(product?.tiers) && product.tiers.length) return product.tiers;
-  if (product?.code === 'TAM-EV-01') return EVENT_TIERS;
   return null;
 }
 
@@ -1011,13 +1035,93 @@ function renderCart() {
   setText('cartTotal', formatPrice(totals.total));
   setText('cartShipping', shippingLabel());
 
-  const info = document.getElementById('paymentInfo');
-  if (info) {
-    info.innerHTML = '💬 Coordinamos la forma de pago por WhatsApp al confirmar el pedido. Sin costos ocultos.';
-  }
+  updatePaymentUI();
 
   const checkoutButton = document.getElementById('checkoutBtn');
   if (checkoutButton) checkoutButton.disabled = entries.length === 0;
+}
+
+function selectedPaymentMethod() {
+  const checked = document.querySelector('#paymentOptions input[name="pago"]:checked');
+  const value = checked?.value || state.paymentMethod || 'efectivo';
+  return value === 'transferencia' ? 'transferencia' : 'efectivo';
+}
+
+function pagoTexto(metodo) {
+  return metodo === 'transferencia'
+    ? `Transferencia (alias ${BRAND.transferAlias || 'a coordinar'})`
+    : 'Efectivo';
+}
+
+function onPaymentMethodChange() {
+  state.paymentMethod = selectedPaymentMethod();
+  saveCustomerDraft();
+  updatePaymentUI();
+}
+
+function updatePaymentUI() {
+  const metodo = selectedPaymentMethod();
+
+  document.querySelectorAll('#paymentOptions .payment-option').forEach((label) => {
+    const input = label.querySelector('input[name="pago"]');
+    label.classList.toggle('is-selected', input?.value === metodo);
+  });
+
+  const aliasBox = document.getElementById('aliasBox');
+  if (aliasBox) aliasBox.hidden = metodo !== 'transferencia';
+
+  const aliasValue = document.getElementById('aliasValue');
+  if (aliasValue) aliasValue.textContent = BRAND.transferAlias || '';
+
+  const info = document.getElementById('paymentInfo');
+  if (info) {
+    info.innerHTML = metodo === 'transferencia'
+      ? '🏦 Transferí al alias de arriba y envianos el comprobante por WhatsApp para confirmar el pedido.'
+      : '💵 Pagás en efectivo al recibir tu pedido. Sin costos ocultos.';
+  }
+}
+
+async function copyAlias(button) {
+  const alias = BRAND.transferAlias || '';
+  if (!alias) return;
+
+  let copied = false;
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(alias);
+      copied = true;
+    }
+  } catch (error) {
+    copied = false;
+  }
+
+  if (!copied) {
+    const helper = document.createElement('textarea');
+    helper.value = alias;
+    helper.setAttribute('readonly', '');
+    helper.style.position = 'fixed';
+    helper.style.opacity = '0';
+    document.body.appendChild(helper);
+    helper.select();
+    try { copied = document.execCommand('copy'); } catch (error) { copied = false; }
+    helper.remove();
+  }
+
+  if (!copied) {
+    showToast('No se pudo copiar. Seleccioná y copiá el alias manualmente.', 'error');
+    return;
+  }
+
+  if (button) {
+    button.classList.add('is-copied');
+    const textoOriginal = button.textContent;
+    button.textContent = '¡Copiado!';
+    setTimeout(() => {
+      button.textContent = textoOriginal;
+      button.classList.remove('is-copied');
+    }, 1600);
+  }
+  showToast('Alias copiado al portapapeles.');
 }
 
 function pickupAddress() {
@@ -1025,7 +1129,6 @@ function pickupAddress() {
 }
 
 function shippingLabel() {
-  if (state.deliveryMode === 'evento') return 'Lugar del evento';
   if (state.deliveryMode === 'takeaway') return `Retiro en ${pickupAddress()}`;
   return 'A coordinar';
 }
@@ -1089,9 +1192,9 @@ function hydrateCustomerForm() {
   setValue('fNombre', state.customer.name || '');
   setValue('fTel', state.customer.phone || '');
   setValue('fDir', state.customer.address || '');
-  setValue('fFecha', state.customer.eventDate || '');
-  setValue('fLugar', state.customer.eventPlace || '');
-  setValue('fInvitados', state.customer.guests || '');
+  document.querySelectorAll('#paymentOptions input[name="pago"]').forEach((input) => {
+    input.checked = input.value === state.paymentMethod;
+  });
   applyDeliveryMode(state.deliveryMode, false);
 }
 
@@ -1101,16 +1204,14 @@ function saveCustomerDraft() {
     name: document.getElementById('fNombre')?.value.trim() || '',
     phone: document.getElementById('fTel')?.value.trim() || '',
     address: document.getElementById('fDir')?.value.trim() || '',
-    eventDate: document.getElementById('fFecha')?.value || '',
-    eventPlace: document.getElementById('fLugar')?.value.trim() || '',
-    guests: document.getElementById('fInvitados')?.value || '',
-    deliveryMode: state.deliveryMode
+    deliveryMode: state.deliveryMode,
+    paymentMethod: state.paymentMethod
   };
   localStorage.setItem(CUSTOMER_KEY, JSON.stringify(state.customer));
 }
 
 function applyDeliveryMode(mode, persist = true) {
-  state.deliveryMode = mode === 'takeaway' || mode === 'evento' ? mode : 'delivery';
+  state.deliveryMode = mode === 'takeaway' ? 'takeaway' : 'delivery';
 
   document.querySelectorAll('#deliveryToggle [data-mode], #sideDeliveryToggle [data-mode]').forEach((button) => {
     button.classList.toggle('active', button.dataset.mode === state.deliveryMode);
@@ -1118,11 +1219,9 @@ function applyDeliveryMode(mode, persist = true) {
 
   const addressField = document.getElementById('addressField');
   const addressInput = document.getElementById('fDir');
-  const eventFields = document.getElementById('eventFields');
 
   if (addressField) addressField.hidden = state.deliveryMode !== 'delivery';
   if (addressInput) addressInput.required = state.deliveryMode === 'delivery';
-  if (eventFields) eventFields.hidden = state.deliveryMode !== 'evento';
 
   setText('cartShipping', shippingLabel());
 
@@ -1145,9 +1244,6 @@ async function submitOrder(event) {
   const telefono = document.getElementById('fTel')?.value.trim() || '';
   const direccion = document.getElementById('fDir')?.value.trim() || '';
   const nota = document.getElementById('fNota')?.value.trim() || '';
-  const fecha = document.getElementById('fFecha')?.value || '';
-  const lugar = document.getElementById('fLugar')?.value.trim() || '';
-  const invitados = Math.max(0, parseInt(document.getElementById('fInvitados')?.value, 10) || 0);
 
   if (!nombre) {
     showToast('Completá tu nombre.', 'error');
@@ -1167,30 +1263,14 @@ async function submitOrder(event) {
     return;
   }
 
-  if (state.deliveryMode === 'evento') {
-    if (!fecha || !lugar) {
-      showToast('Completá la fecha y el lugar del evento.', 'error');
-      (!fecha ? document.getElementById('fFecha') : document.getElementById('fLugar'))?.focus();
-      return;
-    }
-    if (invitados < 20) {
-      showToast('El mínimo para eventos es de 20 invitados.', 'error');
-      document.getElementById('fInvitados')?.focus();
-      return;
-    }
-  }
-
   const totals = getCartTotals(entries);
   const order = {
     codigo: makeOrderCode(),
     nombre,
     telefono,
     modalidad: state.deliveryMode,
-    direccion: state.deliveryMode === 'delivery' ? direccion : (state.deliveryMode === 'takeaway' ? pickupAddress() : lugar),
-    fecha,
-    lugar,
-    invitados,
-    pago: 'a coordinar',
+    direccion: state.deliveryMode === 'delivery' ? direccion : pickupAddress(),
+    pago: pagoTexto(selectedPaymentMethod()),
     nota,
     items: entries.map((entry) => ({
       id: entry.id,
@@ -1218,7 +1298,6 @@ async function submitOrder(event) {
     const comentario = [
       `Pedido ${order.codigo}`,
       modoTexto(order.modalidad),
-      order.modalidad === 'evento' ? `Fecha: ${fecha} · Lugar: ${lugar} · Invitados: ${invitados}` : null,
       `Pago: ${order.pago}`,
       nota ? `Nota: ${nota}` : null
     ].filter(Boolean).join(' · ');
@@ -1227,16 +1306,13 @@ async function submitOrder(event) {
       empresa_id: EMPRESA_ID,
       customer_name: nombre,
       customer_phone: telefono,
-      delivery_address: state.deliveryMode === 'delivery' ? direccion : (state.deliveryMode === 'takeaway' ? pickupAddress() : (lugar || null)),
+      delivery_address: state.deliveryMode === 'delivery' ? direccion : pickupAddress(),
       comment: comentario,
       total: totals.total,
       status: 'pendiente',
       items: {
         codigo: order.codigo,
         modalidad: order.modalidad,
-        fecha: order.fecha || null,
-        lugar: order.lugar || null,
-        invitados: order.invitados || null,
         pago: order.pago,
         notas: nota,
         subtotal: totals.subtotal,
@@ -1249,7 +1325,7 @@ async function submitOrder(event) {
     const { error } = await client.from('orders').insert(payload);
     if (error) throw error;
 
-    await saveCustomerRecord({ nombre, telefono, direccion: state.deliveryMode === 'delivery' ? direccion : lugar });
+    await saveCustomerRecord({ nombre, telefono, direccion: state.deliveryMode === 'delivery' ? direccion : '' });
     state.lastOrder = { ...order, saved: true };
     persistLastOrder();
     clearCart();
@@ -1332,9 +1408,6 @@ function showSuccessModal(order, saved) {
   if (!content) return;
 
   const modal = modoTexto(order.modalidad);
-  const detalleEvento = order.modalidad === 'evento'
-    ? `<div class="success-summary-row"><span>${escapeHTML(order.lugar || 'Lugar a coordinar')}</span><strong>${order.invitados} invitados</strong></div>`
-    : '';
 
   content.innerHTML = `
     <div class="success-check" aria-hidden="true">✓</div>
@@ -1352,9 +1425,8 @@ function showSuccessModal(order, saved) {
       `).join('')}
       <div class="success-summary-row">
         <span>${escapeHTML(modal)}</span>
-        <strong>Pago a coordinar</strong>
+        <strong>${escapeHTML(order.pago || 'A coordinar')}</strong>
       </div>
-      ${detalleEvento}
       <div class="success-summary-row total">
         <span>Total</span>
         <strong>${formatPrice(order.total)}</strong>
@@ -1398,15 +1470,11 @@ function buildWhatsAppMessage(order) {
 
   if (order.modalidad === 'delivery') {
     lines.push(`📍 *Dirección:* ${order.direccion}`);
-  } else if (order.modalidad === 'evento') {
-    lines.push(`📅 *Fecha:* ${order.fecha || 'A confirmar'}`);
-    lines.push(`📍 *Lugar:* ${order.lugar || 'A confirmar'}`);
-    lines.push(`👥 *Invitados:* ${order.invitados || 'A confirmar'}`);
   } else {
     lines.push(`📍 *Retiro:* ${pickupAddress()}`);
   }
 
-  lines.push('💳 *Pago:* a coordinar por WhatsApp');
+  lines.push(`💳 *Pago:* ${order.pago || 'A coordinar'}`);
   lines.push('');
   lines.push('🧾 *Detalle:*');
 
@@ -1468,14 +1536,22 @@ async function loadFromSupabase() {
       .eq('is_active', true)
       .order('sort_order');
 
+    const eventCategoryIds = new Set(
+      (categoriesResult.data || [])
+        .filter((category) => category.slug === 'eventos')
+        .map((category) => category.id)
+    );
+
     if (!categoriesResult.error && categoriesResult.data?.length) {
-      state.categories = categoriesResult.data.map((category) => ({
-        id: category.id,
-        slug: category.slug || 'otros',
-        name: category.name,
-        icon: category.icon || '🍕',
-        order: Number(category.sort_order || 0)
-      }));
+      state.categories = categoriesResult.data
+        .filter((category) => category.slug !== 'eventos')
+        .map((category) => ({
+          id: category.id,
+          slug: category.slug || 'otros',
+          name: category.name,
+          icon: category.icon || '🍕',
+          order: Number(category.sort_order || 0)
+        }));
     }
 
     const [productsResult, bannersResult] = await Promise.all([
@@ -1485,9 +1561,14 @@ async function loadFromSupabase() {
 
     if (!productsResult.error && productsResult.data?.length) {
       const previousMenu = state.menu;
-      const nextMenu = productsResult.data.map(mapSupabaseProduct);
+      const nextMenu = productsResult.data
+        .filter((product) => !eventCategoryIds.has(product.category_id))
+        .filter((product) => product.category_slug !== 'eventos' && !String(product.code || '').startsWith('TAM-EV-'))
+        .map(mapSupabaseProduct)
+        .filter((product) => !isEventProduct(product));
       migrateCartByName(previousMenu, nextMenu);
       state.menu = nextMenu;
+      dropEventItemsFromCart();
       saveCart();
     }
 
@@ -1531,7 +1612,7 @@ function mapSupabaseProduct(product) {
     price: Number(product.price || 0),
     unit,
     minQty,
-    tiers: product.code === 'TAM-EV-01' ? EVENT_TIERS : null,
+    tiers: null,
     image: product.image_url || fallbackImage(category?.slug),
     emoji: product.emoji || '🍕',
     tags: Array.isArray(product.tags) ? product.tags : [],

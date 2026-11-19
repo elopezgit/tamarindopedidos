@@ -702,7 +702,7 @@ def manual():
     ], size=10, leading=16)
     c.setFillColor(SOFT)
     c.roundRect(48, y - 20, W - 96, 56, 10, stroke=0, fill=1)
-    para(c, "No hay descuentos, alias ni costos de envío cargados: la forma de pago se coordina directamente por WhatsApp.",
+    para(c, "El cliente elige efectivo o transferencia al alias tamarindo.pizzeria, copiable desde el checkout. No hay descuentos ni costos de envío cargados.",
          62, y - 2, W - 124, size=10, leading=14, color=GREEN)
     footer(c, page := page + 1)
 

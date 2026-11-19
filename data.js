@@ -25,7 +25,8 @@ const BRAND = {
   hours: [],
   scheduleText: 'Retiro en Av. Nicolás Avellaneda 575 · Horarios a coordinar por WhatsApp',
   delivery: 'Retiro en Av. Nicolás Avellaneda 575 · Delivery a coordinar',
-  payments: ['A coordinar por WhatsApp'],
+  payments: ['Efectivo', 'Transferencia'],
+  transferAlias: 'tamarindo.pizzeria',
   eventService: {
     production: '3 hs de producción en vivo',
     ovens: 'Hornos tipo napolitano (los llevamos nosotros)',
@@ -78,19 +79,10 @@ const CONTACT_CHANNELS = [
   }
 ];
 
-// Tramos de "Solo pizza" según la propuesta v4 (versión final).
-const EVENT_TIERS = [
-  { min: 20, price: 12500 },
-  { min: 30, price: 11500 },
-  { min: 40, price: 10500 },
-  { min: 60, price: 8500 }
-];
-
 const DEFAULT_CATEGORIES = [
   { slug: 'clasicas', name: 'Clásicas', icon: '🍕', order: 1 },
   { slug: 'autor', name: 'De autor', icon: '✨', order: 2 },
-  { slug: 'casa', name: 'De la casa', icon: '🔥', order: 3 },
-  { slug: 'eventos', name: 'Eventos', icon: '🎉', order: 4 }
+  { slug: 'casa', name: 'De la casa', icon: '🔥', order: 3 }
 ];
 
 const DEFAULT_MENU = [
@@ -178,64 +170,6 @@ const DEFAULT_MENU = [
     hot: true,
     rating: 5.0,
     sort: 5
-  },
-  {
-    id: 'default-evento-solo-pizza',
-    code: 'TAM-EV-01',
-    cat: 'eventos',
-    name: 'Evento · Solo pizza',
-    desc: 'Las cinco pizzas de la carta, con masa fresca, preparadas y horneadas en el momento durante las 3 horas de producción. 1 pizza por persona.',
-    ingredients: 'Margherita, jamón cocido, queso azul y repollo morado, zapallo cabutia y romero, pepperoni y tamarindo.',
-    prepDesc: 'Llevamos los hornos tipo napolitano y todo el equipo. Se prepara todo en el lugar. Precio por persona según cantidad de invitados.',
-    prepTime: '3 hs en vivo',
-    price: 12500,
-    unit: 'persona',
-    minQty: 20,
-    tiers: EVENT_TIERS,
-    image: 'img/productos/pepperoni-detalle.webp',
-    emoji: '🎉',
-    tags: ['evento', 'popular'],
-    hot: true,
-    rating: 5.0,
-    sort: 6
-  },
-  {
-    id: 'default-evento-experiencia-completa',
-    code: 'TAM-EV-02',
-    cat: 'eventos',
-    name: 'Evento · Experiencia completa',
-    desc: 'Entrantes de estación, las cinco pizzas (2 clásicas y 3 de autor) y panacota de frutos de estación para cerrar.',
-    ingredients: 'Entrantes de estación · 5 pizzas (2 clásicas y 3 de autor) · panacota de frutos de estación.',
-    prepDesc: 'Llevamos los hornos tipo napolitano y todo el equipo. Precio por persona, desde 20 invitados.',
-    prepTime: '3 hs en vivo',
-    price: 20000,
-    unit: 'persona',
-    minQty: 20,
-    image: 'img/productos/margherita.webp',
-    emoji: '🥂',
-    tags: ['evento', 'premium'],
-    hot: false,
-    rating: 5.0,
-    sort: 7
-  },
-  {
-    id: 'default-extra-panacota',
-    code: 'TAM-EV-03',
-    cat: 'eventos',
-    name: 'Extra · Panacota',
-    desc: 'Panacota de frutos de estación para sumar a la opción Solo pizza.',
-    ingredients: 'Panacota de frutos de estación.',
-    prepDesc: 'Se agrega al paquete de evento. Precio por persona.',
-    prepTime: 'Extra',
-    price: 3000,
-    unit: 'persona',
-    minQty: 20,
-    image: 'img/productos/queso-azul-repollo.webp',
-    emoji: '🍮',
-    tags: ['evento'],
-    hot: false,
-    rating: 5.0,
-    sort: 8
   }
 ];
 

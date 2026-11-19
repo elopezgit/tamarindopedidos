@@ -658,7 +658,7 @@ function renderOrders() {
   body.innerHTML = orders.map((order) => {
     const meta = getOrderMeta(order);
     const entrega = modoPedidoLabel(meta.modalidad, true);
-    const pago = meta.pago ? '💬 A coordinar' : '—';
+    const pago = meta.pago ? escapeHTML(meta.pago) : '—';
     return `
       <tr data-order-open="${escapeAttr(order.id)}" tabindex="0" role="button">
         <td>
@@ -691,7 +691,7 @@ function renderKanbanOrderCard(order, colConfig) {
   const meta = getOrderMeta(order);
   const currentKey = normalizeKanbanStatus(order.status);
   const entregaBadge = modoPedidoLabel(meta.modalidad, true);
-  const pagoBadge = meta.pago ? '💬 A coordinar' : 'Pago s/d';
+  const pagoBadge = meta.pago ? escapeHTML(meta.pago) : 'Pago s/d';
 
   const itemsSummary = meta.items.length
     ? meta.items.slice(0, 4).map((item) => `<li><strong>${Number(item.qty || 1)}×</strong> ${escapeHTML(item.name || 'Producto')}</li>`).join('')
@@ -856,7 +856,7 @@ function openOrderModal(orderId) {
       <div><span>Cliente</span><strong>${escapeHTML(order.customer_name || 'Sin nombre')}</strong></div>
       <div><span>Teléfono</span><strong>${escapeHTML(order.customer_phone || '—')}</strong></div>
       <div><span>Modalidad</span><strong>${modoPedidoLabel(meta.modalidad, false)}</strong></div>
-      <div><span>Pago</span><strong>${meta.pago ? 'A coordinar por WhatsApp' : '—'}</strong></div>
+      <div><span>Pago</span><strong>${meta.pago ? escapeHTML(meta.pago) : '—'}</strong></div>
       <div class="span-2"><span>${meta.modalidad === 'evento' ? 'Lugar del evento' : 'Entrega'}</span><strong>${escapeHTML(meta.modalidad === 'delivery' ? (order.delivery_address || 'Sin dirección') : (meta.lugar || 'A coordinar'))}</strong></div>
       ${meta.modalidad === 'evento' ? `<div><span>Fecha</span><strong>${escapeHTML(meta.fecha || 'A confirmar')}</strong></div><div><span>Invitados</span><strong>${escapeHTML(String(meta.invitados || '—'))}</strong></div>` : ''}
     </div>
@@ -1083,7 +1083,7 @@ function openProductModal(productId = null, duplicateSource = null) {
     <div class="modal-head">
       <p class="eyebrow">${isEditing ? 'Editar producto' : duplicateSource ? 'Duplicar producto' : 'Nuevo producto'}</p>
       <h2>${isEditing ? escapeHTML(product.name) : duplicateSource ? `Copia de ${escapeHTML(product.name)}` : 'Agregar producto al menú'}</h2>
-      <p>El precio ingresado es el final. No hay descuentos por forma de pago: se coordina por WhatsApp.</p>
+      <p>El precio ingresado es el final. El cliente elige entre efectivo y transferencia al armar el pedido; no hay descuentos por forma de pago.</p>
     </div>
 
     <form id="productForm" data-product-id="${isEditing ? escapeAttr(product.id) : ''}">

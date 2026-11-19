@@ -44,7 +44,7 @@ contexto.globalThis = contexto;
 vm.createContext(contexto);
 
 vm.runInContext(
-  fs.readFileSync(path.join(root, 'data.js'), 'utf8') + '\n;globalThis.__DATA={DEFAULT_MENU, EVENT_TIERS, BRAND};',
+  fs.readFileSync(path.join(root, 'data.js'), 'utf8') + '\n;globalThis.__DATA={DEFAULT_MENU, BRAND};',
   contexto
 );
 vm.runInContext(
@@ -52,7 +52,7 @@ vm.runInContext(
   contexto
 );
 
-const { DEFAULT_MENU } = contexto.__DATA;
+const { DEFAULT_MENU, BRAND } = contexto.__DATA;
 const { getUnitPrice, getCartEntries, getCartTotals, makeOrderCode, buildWhatsAppMessage, state } = contexto.__APP;
 
 const fallos = [];
@@ -61,22 +61,17 @@ const igual = (nombre, real, esperado) => {
 };
 
 const pizza = DEFAULT_MENU[0];
-const evento = DEFAULT_MENU.find((p) => p.code === 'TAM-EV-01');
 
 igual('precio Margherita', getUnitPrice(pizza, 1), 18950);
-igual('tramo 20 invitados', getUnitPrice(evento, 20), 12500);
-igual('tramo 25 invitados', getUnitPrice(evento, 25), 12500);
-igual('tramo 30 invitados', getUnitPrice(evento, 30), 11500);
-igual('tramo 40 invitados', getUnitPrice(evento, 40), 10500);
-igual('tramo 60 invitados', getUnitPrice(evento, 60), 8500);
-igual('total 30 invitados', getUnitPrice(evento, 30) * 30, 345000);
+igual('catálogo sin eventos', DEFAULT_MENU.some((p) => p.cat === 'eventos'), false);
+igual('alias de transferencia', BRAND.transferAlias, 'tamarindo.pizzeria');
 
-state.cart = { [evento.id]: { qty: 30, note: 'Cumpleaños' } };
+state.cart = { [pizza.id]: { qty: 2, note: 'Sin cebolla' } };
 const entradas = getCartEntries();
 const totales = getCartTotals(entradas);
-igual('subtotal carrito', totales.subtotal, 345000);
+igual('subtotal carrito', totales.subtotal, 37900);
 igual('sin descuento', totales.descuento, 0);
-igual('total carrito', totales.total, 345000);
+igual('total carrito', totales.total, 37900);
 
 igual('código pedido', /^#TAM-\d{4}$/.test(makeOrderCode()), true);
 
@@ -84,24 +79,23 @@ const mensaje = buildWhatsAppMessage({
   codigo: '#TAM-1234',
   nombre: 'Ana',
   telefono: '3815555555',
-  modalidad: 'evento',
-  direccion: 'Centro',
-  fecha: '2026-12-20',
-  lugar: 'Casa de Ana',
-  invitados: 30,
-  pago: 'a coordinar',
+  modalidad: 'takeaway',
+  direccion: BRAND.address,
+  pago: `Transferencia (alias ${BRAND.transferAlias})`,
   nota: '',
-  items: [{ name: 'Evento · Solo pizza', qty: 30, subtotal: 345000, note: '' }],
-  subtotal: 345000,
-  total: 345000
+  items: [{ name: pizza.name, qty: 2, subtotal: 37900, note: '' }],
+  subtotal: 37900,
+  descuento: 0,
+  total: 37900
 });
 igual('WhatsApp usa número real', mensaje.startsWith('https://wa.me/5493813937777?'), true);
-igual('WhatsApp incluye fecha', decodeURIComponent(mensaje).includes('2026-12-20'), true);
-igual('WhatsApp incluye invitados', decodeURIComponent(mensaje).includes('30'), true);
+igual('WhatsApp incluye retiro', decodeURIComponent(mensaje).includes(BRAND.address), true);
+igual('WhatsApp incluye forma de pago', decodeURIComponent(mensaje).includes(BRAND.transferAlias), true);
+igual('WhatsApp sin evento', decodeURIComponent(mensaje).includes('Evento'), false);
 igual('WhatsApp sin descuento', decodeURIComponent(mensaje).includes('Descuento'), false);
 
 if (fallos.length) {
   console.error('Fallo(s):\n' + fallos.join('\n'));
   process.exit(1);
 }
-console.log('Smoke test OK: precios por tramos, carrito y WhatsApp.');
+console.log('Smoke test OK: carta, carrito, retiro y forma de pago.');
