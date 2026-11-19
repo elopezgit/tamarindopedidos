@@ -2295,7 +2295,7 @@ function openBannerModal(bannerId = null) {
           <input type="text" name="link" id="modalBannerLinkInput" value="${escapeAttr(banner?.link || '#menu')}" placeholder="#menu o https://wa.me/...">
           <div class="link-presets-row">
             <button type="button" class="btn btn-ghost btn-small" data-pick-link="#menu">🍕 Ir al menú (#menu)</button>
-            <button type="button" class="btn btn-ghost btn-small" data-pick-link="https://wa.me/3815392681?text=Hola%2C%20quiero%20consultar%20por%20un%20evento">🎉 WhatsApp Eventos</button>
+            <button type="button" class="btn btn-ghost btn-small" data-pick-link="https://wa.me/3813937777?text=Hola%2C%20quiero%20consultar%20por%20un%20evento">🎉 WhatsApp Eventos</button>
             <button type="button" class="btn btn-ghost btn-small" data-pick-link="https://wa.me/5493874094801?text=Hola%2C%20quiero%20hacer%20un%20pedido">💬 WhatsApp Directo</button>
           </div>
         </div>

@@ -95,7 +95,7 @@ const mensaje = buildWhatsAppMessage({
   subtotal: 345000,
   total: 345000
 });
-igual('WhatsApp usa número real', mensaje.startsWith('https://wa.me/3815392681?'), true);
+igual('WhatsApp usa número real', mensaje.startsWith('https://wa.me/3813937777?'), true);
 igual('WhatsApp incluye fecha', decodeURIComponent(mensaje).includes('2026-12-20'), true);
 igual('WhatsApp incluye invitados', decodeURIComponent(mensaje).includes('30'), true);
 igual('WhatsApp sin descuento', decodeURIComponent(mensaje).includes('Descuento'), false);

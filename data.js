@@ -11,9 +11,9 @@ const BRAND = {
   legalName: 'Tamarindo Pizzería',
   claim: 'El sabor de lo diferente',
   description: 'Pizza napolitana en Tucumán. Masa fresca, horno napolitano y catering para eventos.',
-  phone: '3815392681',
-  phoneDisplay: '381 539 2681',
-  whatsapp: '3815392681',
+  phone: '3813937777',
+  phoneDisplay: '381 393 7777',
+  whatsapp: '3813937777',
   email: 'tamarindopizzeria@gmail.com',
   instagram: 'https://www.instagram.com/tamarindo.pizzeria',
   facebook: '',
@@ -53,7 +53,7 @@ const BRAND = {
 const CONTACT_CHANNELS = [
   {
     name: 'WhatsApp',
-    detail: '381 539 2681',
+    detail: '381 393 7777',
     icon: '💬',
     url: `https://wa.me/${BRAND.whatsapp}?text=${encodeURIComponent('Hola Tamarindo, quiero consultar por sus pizzas / eventos.')}`
   },

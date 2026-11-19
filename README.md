@@ -11,7 +11,7 @@ Identidad tomada del *Branding Opción 4* incluido en `infoBase/`:
 - Tipografías: **Covered By Your Grace** (títulos) y **Urbanist** (textos).
 - El hero usa el patrón de personaje + rayo extraído del PDF, en naranja sobre verde profundo; se evitan las combinaciones que el manual marca como «NO» (verde profundo sobre naranja o rojo).
 - `npm test` verifica que no reaparezcan colores ajenos a la paleta.
-- Contacto: WhatsApp **381 539 2681** · `tamarindopizzeria@gmail.com` · [@tamarindo.pizzeria](https://www.instagram.com/tamarindo.pizzeria).
+- Contacto: WhatsApp **381 393 7777** · `tamarindopizzeria@gmail.com` · [@tamarindo.pizzeria](https://www.instagram.com/tamarindo.pizzeria).
 
 ## Características principales
 

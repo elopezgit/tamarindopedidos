@@ -1,0 +1,33 @@
+MATERIAL COMERCIAL Y DE USO — TAMARINDO PIZZAS
+==============================================
+
+Esta carpeta contiene los documentos de venta del sistema desarrollado para
+Tamarindo Pizzería (Tucumán).
+
+ARCHIVOS
+--------
+Tamarindo_Presentacion_Comercial.pdf  Presentación de venta (12 páginas).
+Tamarindo_Manual_de_Uso.pdf           Manual paso a paso (20 páginas).
+capturas/                              26 capturas reales de la tienda y del panel.
+fuentes/                               Fuentes Urbanist y Covered By Your Grace.
+generar_pdfs.py                        Script que regenera ambos PDF.
+
+REGENERAR
+---------
+  python infoBase/pdfventa/generar_pdfs.py
+
+Requiere reportlab (pip install reportlab).
+
+NOTAS
+-----
+- Las capturas de la tienda se tomaron en modo celular (390x844 a doble
+  resolución). Las del panel de administración se tomaron en modo escritorio.
+- Las capturas del panel con pedidos y clientes usan datos de DEMOSTRACIÓN
+  inyectados solo en el navegador: no se escribió nada en la base de datos
+  de Supabase.
+- El contenido de los PDF describe únicamente funcionalidades que existen
+  hoy en el código. No se incluyeron reportes, capital/márgenes, stock ni
+  campañas automáticas porque el sistema no los implementa.
+- Las credenciales de acceso que aparecen en los documentos son las que
+  tiene el sistema por defecto (admin / 123456). Se recomienda cambiarlas
+  antes de entregar el acceso a otras personas.

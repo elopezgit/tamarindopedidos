@@ -5,14 +5,12 @@ html[data-theme="light"] {
   /* Paleta oficial Tamarindo · Branding Opción 4 */
   --cream: #f6ebe2;
   --orange: #ec681d;
-  --red: #ec681d;
-  --red-bright: #df1517;
-  --red-soft: rgba(236, 104, 29, 0.12);
-  --gold: #ec681d;
-  --gold-bright: #df1517;
-  --gold-soft: rgba(223, 21, 23, 0.12);
+  --orange-soft: rgba(236, 104, 29, 0.12);
+  --red: #df1517;
+  --red-soft: rgba(223, 21, 23, 0.12);
   --green: #013325;
   --green-soft: rgba(1, 51, 37, 0.1);
+  --green-ink: #013325;
   --bg: #f6ebe2;
   --bg-2: #efe0d4;
   --surface: #fffdfb;
@@ -36,14 +34,12 @@ html[data-theme="light"] {
 html[data-theme="dark"] {
   --cream: #f6ebe2;
   --orange: #ec681d;
-  --red: #ec681d;
-  --red-bright: #df1517;
-  --red-soft: rgba(236, 104, 29, 0.2);
-  --gold: #ec681d;
-  --gold-bright: #df1517;
-  --gold-soft: rgba(223, 21, 23, 0.2);
-  --green: #ec681d;
-  --green-soft: rgba(236, 104, 29, 0.18);
+  --orange-soft: rgba(236, 104, 29, 0.2);
+  --red: #df1517;
+  --red-soft: rgba(223, 21, 23, 0.2);
+  --green: #013325;
+  --green-soft: rgba(1, 51, 37, 0.35);
+  --green-ink: #f6ebe2;
   --bg: #013325;
   --bg-2: #073f2e;
   --surface: #0a4734;
@@ -138,7 +134,7 @@ h3 {
 .eyebrow {
   display: inline-block;
   margin-bottom: 4px;
-  color: var(--red);
+  color: var(--orange);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -168,13 +164,13 @@ h3 {
 }
 
 .btn-primary {
-  background: var(--red);
+  background: var(--orange);
   color: #f6ebe2;
   box-shadow: 0 6px 18px rgba(236, 104, 29, 0.28);
 }
 
 .btn-primary:hover {
-  background: var(--red-bright);
+  background: var(--red);
 }
 
 .btn-whatsapp {
@@ -234,9 +230,11 @@ h3 {
 
 .splash-name span {
   display: block;
-  color: var(--red);
-  font-size: 0.52em;
-  letter-spacing: 0.08em;
+  color: var(--orange);
+  font-family: var(--font-body);
+  font-size: 0.34em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .splash-claim {
@@ -259,7 +257,7 @@ h3 {
   width: 45%;
   height: 100%;
   border-radius: inherit;
-  background: var(--red);
+  background: var(--orange);
   animation: splashLoad 0.8s ease-in-out infinite;
 }
 
@@ -368,7 +366,7 @@ h3 {
 }
 
 .header-status.is-closed .status-dot {
-  background: var(--gold-bright);
+  background: var(--red);
   box-shadow: none;
 }
 
@@ -420,7 +418,7 @@ h3 {
   padding: 0 6px;
   border-radius: 999px;
   background: #f6ebe2;
-  color: var(--red);
+  color: var(--orange);
   font-size: 0.72rem;
   font-weight: 800;
 }
@@ -496,7 +494,7 @@ h3 {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: var(--red);
+  background: var(--orange);
   color: #f6ebe2;
 }
 
@@ -626,7 +624,7 @@ h3 {
 .py-glass-card.is-active {
   transform: translateY(-2px);
   background: rgba(246, 235, 226, 0.26);
-  border-color: var(--gold-bright);
+  border-color: var(--red);
 }
 
 .py-star-badge {
@@ -705,7 +703,7 @@ h3 {
 .py-bento-card:hover,
 .py-bento-card.is-active {
   transform: translateY(-2px);
-  border-color: var(--red);
+  border-color: var(--orange);
   box-shadow: var(--shadow-md);
 }
 
@@ -718,7 +716,7 @@ h3 {
   gap: 4px;
   padding: 3px 8px;
   border-radius: 999px;
-  background: var(--red);
+  background: var(--orange);
   color: #f6ebe2;
   font-size: 0.62rem;
   font-weight: 800;
@@ -728,7 +726,7 @@ h3 {
   padding: 1px 5px;
   border-radius: 999px;
   background: #f6ebe2;
-  color: var(--red);
+  color: var(--orange);
   font-style: normal;
   font-weight: 900;
 }
@@ -828,7 +826,7 @@ h3 {
 
 .promo-dot.is-active {
   width: 20px;
-  background: var(--red);
+  background: var(--orange);
 }
 
 .promo-card::before {
@@ -849,7 +847,7 @@ h3 {
   margin-bottom: 4px;
   padding: 2px 7px;
   border-radius: 999px;
-  background: var(--gold-bright);
+  background: var(--red);
   color: #013325;
   font-size: 0.6rem;
   font-weight: 800;
@@ -900,8 +898,8 @@ h3 {
 }
 
 .search-box:focus-within {
-  border-color: var(--red);
-  box-shadow: 0 0 0 3px var(--red-soft);
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-soft);
 }
 
 .search-box span {
@@ -952,8 +950,8 @@ h3 {
 }
 
 .filter-chip.active {
-  border-color: var(--red);
-  background: var(--red);
+  border-color: var(--orange);
+  background: var(--orange);
   color: #f6ebe2;
 }
 
@@ -1033,8 +1031,8 @@ h3 {
 }
 
 .product-card.in-cart {
-  border-color: var(--red);
-  box-shadow: 0 0 0 1px var(--red), var(--shadow-sm);
+  border-color: var(--orange);
+  box-shadow: 0 0 0 1px var(--orange), var(--shadow-sm);
 }
 
 .product-body {
@@ -1059,8 +1057,8 @@ h3 {
 }
 
 .py-badge-hot {
-  background: var(--red-soft);
-  color: var(--red);
+  background: var(--orange-soft);
+  color: var(--orange);
 }
 
 .py-badge-cat {
@@ -1116,7 +1114,7 @@ h3 {
   padding: 2px 6px;
   border-radius: 5px;
   background: var(--green-soft);
-  color: var(--green);
+  color: var(--green-ink);
   font-size: 0.62rem;
   font-weight: 800;
 }
@@ -1174,7 +1172,7 @@ h3 {
   padding: 0;
   border: 2px solid var(--surface);
   border-radius: 50%;
-  background: var(--red);
+  background: var(--orange);
   color: #f6ebe2;
   font-size: 1.25rem;
   font-weight: 700;
@@ -1193,7 +1191,7 @@ h3 {
   padding: 2px;
   border: 2px solid var(--surface);
   border-radius: 999px;
-  background: var(--red);
+  background: var(--orange);
   color: #f6ebe2;
   box-shadow: 0 4px 12px rgba(223, 21, 23, 0.35);
 }
@@ -1289,7 +1287,7 @@ h3 {
   padding: 13px 16px;
   border: 0;
   border-radius: 16px;
-  background: var(--red);
+  background: var(--orange);
   color: #f6ebe2;
   box-shadow: 0 12px 28px rgba(223, 21, 23, 0.38);
   cursor: pointer;
@@ -1331,9 +1329,9 @@ h3 {
   gap: 10px;
   margin-top: 10px;
   padding: 10px 12px;
-  border: 1.5px dashed var(--red);
+  border: 1.5px dashed var(--orange);
   border-radius: 12px;
-  background: var(--red-soft);
+  background: var(--orange-soft);
 }
 
 .alias-copy-box-modal {
@@ -1363,7 +1361,7 @@ h3 {
   padding: 7px 12px;
   border: 0;
   border-radius: 10px;
-  background: var(--red);
+  background: var(--orange);
   color: #f6ebe2;
   font-size: 0.76rem;
   font-weight: 800;
@@ -1598,7 +1596,7 @@ h3 {
 .field input:focus,
 .field textarea:focus,
 .field select:focus {
-  border-color: var(--red);
+  border-color: var(--orange);
   background: var(--surface);
 }
 
@@ -1630,7 +1628,7 @@ h3 {
 }
 
 .segmented-btn.active {
-  background: var(--red);
+  background: var(--orange);
   color: #f6ebe2;
 }
 
@@ -1652,13 +1650,13 @@ h3 {
 }
 
 .payment-option:has(input:checked) {
-  border-color: var(--red);
-  background: var(--red-soft);
+  border-color: var(--orange);
+  background: var(--orange-soft);
 }
 
 .payment-option input {
   margin: 3px 0 0;
-  accent-color: var(--red);
+  accent-color: var(--orange);
 }
 
 .payment-option strong,
@@ -1681,7 +1679,7 @@ h3 {
   padding: 8px 10px;
   border-radius: 9px;
   background: var(--green-soft);
-  color: var(--green);
+  color: var(--green-ink);
   font-size: 0.73rem;
   font-weight: 600;
 }
@@ -1709,7 +1707,7 @@ h3 {
 
 #discountRow,
 #discountRow strong {
-  color: var(--green);
+  color: var(--green-ink);
   font-weight: 700;
 }
 
@@ -1724,7 +1722,7 @@ h3 {
 
 .cart-totals .cart-total strong {
   font-size: 1.2rem;
-  color: var(--red);
+  color: var(--orange);
 }
 
 .checkout-btn,
@@ -1811,7 +1809,7 @@ h3 {
   bottom: 12px;
   padding: 5px 10px;
   border-radius: 999px;
-  background: var(--red);
+  background: var(--orange);
   color: #f6ebe2;
   font-size: 0.68rem;
   font-weight: 800;
@@ -1822,7 +1820,7 @@ h3 {
 }
 
 .pm-cat {
-  color: var(--red);
+  color: var(--orange);
   font-size: 0.68rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -1868,7 +1866,7 @@ h3 {
 
 .pm-price-card.pm-price-cash small,
 .pm-price-card.pm-price-cash strong {
-  color: var(--green);
+  color: var(--green-ink);
 }
 
 .pm-price-card strong {
@@ -1939,7 +1937,7 @@ h3 {
   padding: 11px 14px;
   border: 0;
   border-radius: 12px;
-  background: var(--red);
+  background: var(--orange);
   color: #f6ebe2;
   font-weight: 800;
   font-size: 0.86rem;
@@ -2012,7 +2010,7 @@ h3 {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: var(--red-soft);
+  background: var(--orange-soft);
   font-size: 1rem;
 }
 
@@ -2061,7 +2059,7 @@ h3 {
   margin: 4px auto 10px;
   border-radius: 50%;
   background: var(--green-soft);
-  color: var(--green);
+  color: var(--green-ink);
   font-size: 1.5rem;
   font-weight: 800;
 }
@@ -2082,8 +2080,8 @@ h3 {
   margin: 2px 0 10px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: var(--red-soft);
-  color: var(--red);
+  background: var(--orange-soft);
+  color: var(--orange);
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -2112,7 +2110,7 @@ h3 {
 
 .success-summary-row.discount,
 .success-summary-row.discount strong {
-  color: var(--green);
+  color: var(--green-ink);
 }
 
 .success-summary-row.total {
@@ -2125,7 +2123,7 @@ h3 {
 
 .success-summary-row.total strong {
   font-size: 1.12rem;
-  color: var(--red);
+  color: var(--orange);
 }
 
 .success-actions {
@@ -2164,7 +2162,7 @@ h3 {
 }
 
 .toast.is-error {
-  background: var(--red);
+  background: var(--orange);
 }
 
 /* ─── ADAPTACIÓN A TABLET Y ESCRITORIO (MIN-WIDTH) ───────────────────────── */
@@ -2348,8 +2346,8 @@ h3 {
     height: 26px;
     padding: 0 7px;
     border-radius: 999px;
-    background: var(--red-soft);
-    color: var(--red);
+    background: var(--orange-soft);
+    color: var(--orange);
     font-size: 0.78rem;
     font-weight: 800;
   }
@@ -2466,12 +2464,12 @@ h3 {
     padding: 6px 9px;
     border-radius: 9px;
     background: var(--green-soft);
-    color: var(--green);
+    color: var(--green-ink);
     font-weight: 700;
   }
 
   .side-row-cash strong {
-    color: var(--green);
+    color: var(--green-ink);
   }
 
   .side-checkout-btn {
@@ -2503,17 +2501,30 @@ body > *:not(#splash):not(#app):not(#mobileCartBar):not(#cartOverlay):not(#cartD
   z-index: -9999 !important;
 }
 
-/* ─── AJUSTES DE MARCA TAMARINDO ─────────────────────────────────────────── */
+/* ─── REGLAS DE MARCA · BRANDING OPCIÓN 4 ──────────────────────────────────
+   Variantes: naranja sobre crema/verde (principal), crema sobre fondos
+   oscuros o tamaños chicos (splash), verde monocromo para una sola tinta.
+   Área de protección: margen libre x = altura de la "T" del lettering.
+   Mínimo digital: 90 px para el logo completo; personaje suelto desde 10 mm.
+   Los logos de 38-58 px del header y del hero son marcas reducidas de interfaz:
+   conservan su tamaño y se apoyan en el espacio libre que deja el layout.
+   ------------------------------------------------------------------------ */
 
+/* Logo completo: se respeta el mínimo digital de 90 px del manual. */
+.splash-logo {
+  min-width: 90px;
+}
+
+/* La manuscrita va sólo en titulares cortos; las etiquetas chicas usan Urbanist. */
 .py-hero-kicker-title {
   font-family: var(--font-display);
-  font-size: 1.55rem;
+  font-size: 1.75rem;
   font-weight: 400;
 }
 
 .product-name {
   font-family: var(--font-display);
-  font-size: 1.45rem;
+  font-size: 1.6rem;
   font-weight: 400;
   line-height: 1.05;
   letter-spacing: 0;
