@@ -1992,6 +1992,202 @@ h3 {
   cursor: pointer;
 }
 
+/* ─── Mitad y mitad: elección de dos pizzas ──────────────────────────────── */
+
+.hh-body {
+  padding: 18px 18px calc(22px + env(safe-area-inset-bottom));
+}
+
+.hh-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.hh-slot {
+  position: relative;
+  min-height: 64px;
+  padding: 9px 26px 9px 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+
+.hh-slot.is-filled {
+  border-style: solid;
+  border-color: var(--orange);
+  background: var(--orange-soft);
+}
+
+.hh-slot-label {
+  display: block;
+  color: var(--orange);
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.hh-slot strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.hh-slot small {
+  color: var(--text-soft);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.hh-slot-empty {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.hh-slot-clear {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.62rem;
+  cursor: pointer;
+}
+
+.hh-help {
+  margin: -4px 0 10px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.hh-price {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(236, 104, 29, 0.28);
+  border-radius: 12px;
+  background: var(--green-soft);
+}
+
+.hh-price small {
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.hh-price strong {
+  display: block;
+  color: var(--green-ink);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.hh-price-hint {
+  color: var(--text-soft);
+  font-size: 0.7rem;
+}
+
+.hh-list-title {
+  margin-bottom: 8px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.hh-list {
+  display: grid;
+  gap: 8px;
+  max-height: 34dvh;
+  overflow-y: auto;
+  margin-bottom: 14px;
+  padding-right: 2px;
+}
+
+.hh-pizza {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.hh-pizza.is-selected {
+  border-color: var(--orange);
+  background: var(--orange-soft);
+}
+
+.hh-pizza img {
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 9px;
+  object-fit: cover;
+  background: var(--surface-3);
+}
+
+.hh-pizza-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.hh-pizza-info strong {
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.hh-pizza-info small {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.hh-pizza-check {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--orange);
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.hh-pizza.is-selected .hh-pizza-check {
+  border-color: var(--orange);
+  background: var(--orange);
+  color: #f6ebe2;
+}
+
+.hh-empty {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.pm-add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Modal de Info y Puntos de Retiro */
 .info-modal-body {
   padding: 14px 18px calc(24px + env(safe-area-inset-bottom));

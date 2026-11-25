@@ -173,6 +173,27 @@ const DEFAULT_MENU = [
   }
 ];
 
+// Producto exclusivo de frontend: NO se guarda en Supabase ni se carga desde el panel.
+// Permite armar una pizza con dos mitades distintas; se cobra el precio de la pizza más cara.
+const HALF_HALF_PRODUCT = {
+  id: 'local-mitad-y-mitad',
+  code: 'TAM-MM',
+  cat: 'clasicas',
+  name: 'Mitad y mitad',
+  desc: 'Elegí dos pizzas distintas y armá la tuya. Pagás el precio de la pizza más cara.',
+  ingredients: 'Según las pizzas que elijas para cada mitad.',
+  prepDesc: 'Dos mitades de pizzas napolitanas horneadas juntas en una sola pizza.',
+  prepTime: 'En vivo',
+  price: 0,
+  image: 'img/productos/margherita.webp',
+  emoji: '🥧',
+  tags: [],
+  hot: false,
+  rating: 5.0,
+  sort: 6,
+  isHalfHalf: true
+};
+
 const DEFAULT_BANNERS = [
   {
     image: 'img/banners/banner-napolitana.webp',

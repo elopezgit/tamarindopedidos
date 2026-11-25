@@ -20,6 +20,7 @@ Identidad tomada del *Branding Opción 4* incluido en `infoBase/`:
 - **Carta de 5 pizzas** (Margherita, Jamón cocido, Queso azul y repollo morado, Zapallo cabutia y romero, Pepperoni y tamarindo) con precios de `infoBase/infovarios.txt`.
 - **Eventos privados**: Solo pizza (desde $12.500/persona según cantidad de invitados), Experiencia completa ($20.000/persona) y extra Panacota (+$3.000/persona), según el presupuesto v4 de `infoBase/`.
 - **Pedidos por WhatsApp** con carrito lateral en escritorio y barra flotante en móviles. El cliente elige la forma de pago: efectivo o transferencia al alias `tamarindo.pizzeria` (copiable desde el checkout y el modal de contacto). Sin descuentos.
+- **Mitad y mitad**: producto de solo frontend (no se crea en Supabase) cuyo modal lista las pizzas de la carta para elegir dos mitades distintas. El precio es el de la pizza más cara y la observación con ambas variedades viaja en el pedido.
 - **Panel de administración (`admin.html`)** para gestionar pedidos, clientes, productos, categorías, asignaciones y banners en Supabase.
 
 > Los archivos de `infoBase/` son la fuente de verdad de la marca: PDFs de branding y presupuestos, fotos reales de las pizzas y `infovarios.txt` con los precios.

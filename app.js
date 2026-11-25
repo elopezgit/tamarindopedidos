@@ -9,7 +9,7 @@ const LAST_ORDER_KEY = 'tamarindo_last_order';
 
 const state = {
   categories: clone(DEFAULT_CATEGORIES).filter((cat) => cat.slug !== 'eventos'),
-  menu: clone(DEFAULT_MENU).filter((product) => product.cat !== 'eventos'),
+  menu: [...clone(DEFAULT_MENU).filter((product) => product.cat !== 'eventos'), clone(HALF_HALF_PRODUCT)],
   banners: clone(DEFAULT_BANNERS),
   cart: loadJSON(CART_KEY, {}),
   customer: loadJSON(CUSTOMER_KEY, {}),
@@ -19,6 +19,7 @@ const state = {
   paymentMethod: 'efectivo',
   modalProductId: null,
   modalQty: 1,
+  modalHalves: [],
   lastOrder: loadJSON(LAST_ORDER_KEY, null),
   supabase: null,
   toastTimer: null
@@ -29,6 +30,41 @@ if (state.customer.paymentMethod === 'transferencia') state.paymentMethod = 'tra
 
 function isEventProduct(product) {
   return Boolean(product) && (product.cat === 'eventos' || String(product.code || '').startsWith('TAM-EV-'));
+}
+
+function isHalfHalfProduct(product) {
+  return Boolean(product) && (product.isHalfHalf === true || String(product.id) === HALF_HALF_PRODUCT.id);
+}
+
+/* Pizzas que pueden usarse como mitad: las activas del menú, sin eventos ni la propia Mitad y mitad. */
+function getHalfOptions() {
+  return state.menu.filter((product) =>
+    !isEventProduct(product)
+    && !isHalfHalfProduct(product)
+    && productUnit(product) !== 'persona'
+  );
+}
+
+function isHalfSelectionValid(halves) {
+  if (!Array.isArray(halves) || halves.length !== 2) return false;
+  if (String(halves[0]) === String(halves[1])) return false;
+  const options = getHalfOptions();
+  return halves.every((id) => options.some((product) => String(product.id) === String(id)));
+}
+
+function getHalfUnitPrice(halves) {
+  if (!isHalfSelectionValid(halves)) return 0;
+  const prices = halves.map((id) => {
+    const pizza = getHalfOptions().find((product) => String(product.id) === String(id));
+    return Number(pizza?.price) || 0;
+  });
+  return Math.max(...prices);
+}
+
+function halfNoteText(halves) {
+  if (!isHalfSelectionValid(halves)) return '';
+  const names = halves.map((id) => getHalfOptions().find((product) => String(product.id) === String(id))?.name);
+  return `Mitad y mitad: ${names[0]} + ${names[1]}`;
 }
 
 function dropEventItemsFromCart() {
@@ -698,15 +734,22 @@ function productCardHTML(product) {
   const rating = Number(product.rating || 5).toFixed(1);
   const inCartQty = Number(state.cart[product.id]?.qty || 0);
   const isPerPerson = productUnit(product) === 'persona';
+  const isHalf = isHalfHalfProduct(product);
   const tiers = getTiers(product);
   const price = tiers ? Number(tiers[0].price) : Number(product.price || 0);
   const minQty = Math.max(1, Number(product.minQty || 1));
+  const halfPrices = isHalf ? getHalfOptions().map((item) => Number(item.price) || 0) : [];
 
   const badgeHTML = product.hot
     ? '<span class="py-badge py-badge-hot">🔥 Popular</span>'
     : `<span class="py-badge py-badge-cat">${escapeHTML(categoryName(product.cat))}</span>`;
 
-  const actionControl = inCartQty > 0
+  // La Mitad y mitad siempre abre el modal: agregarla sin elegir las dos pizzas no tendría sentido.
+  const actionControl = isHalf
+    ? `
+      <button class="add-btn" type="button" aria-label="Elegir las dos mitades de ${escapeAttr(product.name)}">+</button>
+    `
+    : inCartQty > 0
     ? `
       <div class="card-stepper" role="group" aria-label="Cantidad en el pedido">
         <button type="button" class="card-step-btn" data-card-minus="${escapeAttr(product.id)}" aria-label="Restar">−</button>
@@ -719,9 +762,11 @@ function productCardHTML(product) {
         aria-label="Agregar ${escapeAttr(product.name)} al pedido">+</button>
     `;
 
-  const priceLabel = tiers
-    ? `Desde <strong>${formatPrice(price)}</strong> / persona`
-    : formatPrice(price);
+  const priceLabel = isHalf
+    ? (halfPrices.length ? `Desde <strong>${formatPrice(Math.min(...halfPrices))}</strong>` : 'A elegir')
+    : tiers
+      ? `Desde <strong>${formatPrice(price)}</strong> / persona`
+      : formatPrice(price);
 
   return `
     <article class="product-card ${inCartQty > 0 ? 'in-cart' : ''}" data-product-id="${escapeAttr(product.id)}" tabindex="0" role="button"
@@ -739,7 +784,7 @@ function productCardHTML(product) {
               <span class="product-price">${priceLabel}</span>
             </div>
             <span class="product-transfer">
-              ${isPerPerson ? `Mínimo ${minQty} personas · precio por tramo` : 'Pizza napolitana · masa fresca'}
+              ${isHalf ? 'Elegí 2 mitades · se cobra la pizza más cara' : isPerPerson ? `Mínimo ${minQty} personas · precio por tramo` : 'Pizza napolitana · masa fresca'}
             </span>
           </div>
         </div>
@@ -781,6 +826,8 @@ function openProductModal(id) {
   const minQty = Math.max(1, Number(product.minQty || 1));
   state.modalProductId = product.id;
   state.modalQty = Math.max(minQty, state.cart[product.id]?.qty || minQty);
+  const savedHalves = state.cart[product.id]?.halves;
+  state.modalHalves = isHalfHalfProduct(product) && isHalfSelectionValid(savedHalves) ? [...savedHalves] : [];
   renderProductModal();
   const overlay = document.getElementById('productModalOverlay');
   if (overlay) overlay.hidden = false;
@@ -792,6 +839,11 @@ function renderProductModal() {
   const product = state.menu.find((item) => String(item.id) === String(state.modalProductId));
   const container = document.getElementById('productModalContent');
   if (!product || !container) return;
+
+  if (isHalfHalfProduct(product)) {
+    renderHalfHalfModal(product, container);
+    return;
+  }
 
   const image = product.image || fallbackImage(product.cat);
   const rating = Number(product.rating || 5).toFixed(1);
@@ -863,14 +915,134 @@ function renderProductModal() {
   });
 }
 
+/* Vuelve a pintar el modal sin perder el scroll de la lista de pizzas. */
+function refreshHalfHalfModal(product, container) {
+  const scrollTop = container.querySelector('.hh-list')?.scrollTop || 0;
+  renderHalfHalfModal(product, container);
+  const list = container.querySelector('.hh-list');
+  if (list) list.scrollTop = scrollTop;
+}
+
+/* Modal propio de la Mitad y mitad: se eligen dos pizzas distintas de la carta. */
+function renderHalfHalfModal(product, container) {
+  const options = getHalfOptions();
+  const valid = isHalfSelectionValid(state.modalHalves);
+  const unitPrice = valid ? getHalfUnitPrice(state.modalHalves) : 0;
+
+  const slotsHTML = [0, 1].map((index) => {
+    const pizza = options.find((item) => String(item.id) === String(state.modalHalves[index]));
+    return `
+      <div class="hh-slot ${pizza ? 'is-filled' : ''}">
+        <span class="hh-slot-label">Mitad ${index + 1}</span>
+        ${pizza
+          ? `<strong>${escapeHTML(pizza.name)}</strong>
+             <small>${formatPrice(Number(pizza.price) || 0)}</small>
+             <button type="button" class="hh-slot-clear" data-hh-clear="${index}"
+               aria-label="Quitar ${escapeAttr(pizza.name)}">✕</button>`
+          : '<span class="hh-slot-empty">Elegí una pizza de la lista</span>'}
+      </div>
+    `;
+  }).join('');
+
+  const optionsHTML = options.map((pizza) => {
+    const selectedIndex = state.modalHalves.findIndex((id) => String(id) === String(pizza.id));
+    return `
+      <button type="button" class="hh-pizza ${selectedIndex >= 0 ? 'is-selected' : ''}"
+        data-hh-pizza="${escapeAttr(pizza.id)}" aria-pressed="${selectedIndex >= 0}">
+        <img src="${escapeAttr(pizza.image || fallbackImage(pizza.cat))}" alt="" loading="lazy"
+          onerror="this.style.display='none'">
+        <span class="hh-pizza-info">
+          <strong>${escapeHTML(pizza.name)}</strong>
+          <small>${formatPrice(Number(pizza.price) || 0)}</small>
+        </span>
+        <span class="hh-pizza-check">${selectedIndex >= 0 ? `Mitad ${selectedIndex + 1}` : '+'}</span>
+      </button>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="hh-body">
+      <span class="pm-cat">${escapeHTML(categoryName(product.cat))}</span>
+      <h2 id="pmTitle">${escapeHTML(product.name)}</h2>
+      <div class="pm-rating">🥧 Elegí dos pizzas distintas · masa fresca, hecha al momento</div>
+      <p class="pm-desc">${escapeHTML(product.desc)}</p>
+      <div class="hh-slots">${slotsHTML}</div>
+      <p class="hh-help">Tocá una pizza para asignarla; tocá una seleccionada para quitarla. Con dos mitades elegidas, la siguiente reemplaza la mitad 2.</p>
+      <div class="hh-price">
+        <div>
+          <small>${valid ? '💵 Precio de la pizza más cara' : '💵 Precio a calcular'}</small>
+          <strong id="hhPrice">${valid ? formatPrice(unitPrice) : 'Elegí 2 mitades'}</strong>
+        </div>
+        ${valid ? `<span class="hh-price-hint">${escapeHTML(halfNoteText(state.modalHalves))}</span>` : ''}
+      </div>
+      <h3 class="hh-list-title">Pizzas disponibles</h3>
+      <div class="hh-list">
+        ${optionsHTML || '<p class="hh-empty">No hay pizzas disponibles para armar las mitades.</p>'}
+      </div>
+      <div class="pm-actions">
+        <div class="qty-control" aria-label="Cantidad">
+          <button type="button" id="pmMinusBtn" aria-label="Restar una unidad">−</button>
+          <span id="pmQty">${state.modalQty}</span>
+          <button type="button" id="pmPlusBtn" aria-label="Sumar una unidad">+</button>
+        </div>
+        <button type="button" class="pm-add-btn" id="pmAddBtn" ${valid ? '' : 'disabled'}>
+          ${valid ? `Sumar · ${formatPrice(unitPrice * state.modalQty)}` : 'Elegí 2 mitades'}
+        </button>
+      </div>
+    </div>
+  `;
+
+  container.querySelectorAll('[data-hh-pizza]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const id = button.dataset.hhPizza;
+      const index = state.modalHalves.findIndex((halfId) => String(halfId) === String(id));
+      if (index >= 0) {
+        state.modalHalves.splice(index, 1);
+      } else if (state.modalHalves.length < 2) {
+        state.modalHalves.push(id);
+      } else {
+        state.modalHalves[1] = id;
+      }
+      refreshHalfHalfModal(product, container);
+    });
+  });
+
+  container.querySelectorAll('[data-hh-clear]').forEach((button) => {
+    button.addEventListener('click', () => {
+      state.modalHalves.splice(Number(button.dataset.hhClear), 1);
+      refreshHalfHalfModal(product, container);
+    });
+  });
+
+  document.getElementById('pmMinusBtn')?.addEventListener('click', () => {
+    state.modalQty = Math.max(1, state.modalQty - 1);
+    updateModalQtyAndPrice();
+  });
+  document.getElementById('pmPlusBtn')?.addEventListener('click', () => {
+    state.modalQty = Math.min(999, state.modalQty + 1);
+    updateModalQtyAndPrice();
+  });
+  document.getElementById('pmAddBtn')?.addEventListener('click', () => {
+    if (!isHalfSelectionValid(state.modalHalves)) return;
+    setCartHalves(product.id, state.modalHalves, state.modalQty);
+    closeProductModal();
+  });
+}
+
 function updateModalQtyAndPrice() {
   const product = state.menu.find((item) => String(item.id) === String(state.modalProductId));
   if (!product) return;
   const qty = document.getElementById('pmQty');
   const button = document.getElementById('pmAddBtn');
+  const isHalf = isHalfHalfProduct(product);
+  const valid = !isHalf || isHalfSelectionValid(state.modalHalves);
+  const unitPrice = isHalf ? getHalfUnitPrice(state.modalHalves) : getUnitPrice(product, state.modalQty);
   if (qty) qty.textContent = state.modalQty;
   if (button) {
-    button.textContent = `Sumar · ${formatPrice(getUnitPrice(product, state.modalQty) * state.modalQty)}`;
+    button.disabled = !valid;
+    button.textContent = valid
+      ? `Sumar · ${formatPrice(unitPrice * state.modalQty)}`
+      : 'Elegí 2 mitades';
   }
 }
 
@@ -878,6 +1050,7 @@ function closeProductModal() {
   const overlay = document.getElementById('productModalOverlay');
   if (overlay) overlay.hidden = true;
   state.modalProductId = null;
+  state.modalHalves = [];
   syncBodyScroll();
 }
 
@@ -911,15 +1084,39 @@ function syncBodyScroll() {
   document.body.classList.toggle('no-scroll', Boolean(cartOpen || productOpen || infoOpen || successOpen));
 }
 
+function buildCartEntry(current, qty) {
+  const entry = { qty, note: current.note || '' };
+  if (Array.isArray(current.halves) && current.halves.length === 2) entry.halves = [...current.halves];
+  return entry;
+}
+
+function requireChosenHalves(product, current) {
+  if (!isHalfHalfProduct(product) || isHalfSelectionValid(current.halves)) return true;
+  showToast('Elegí las dos mitades antes de agregar.', 'error');
+  openProductModal(product.id);
+  return false;
+}
+
+/* Guarda la Mitad y mitad con las dos pizzas elegidas y el precio resultante. */
+function setCartHalves(id, halves, quantity = 1) {
+  const product = state.menu.find((item) => String(item.id) === String(id));
+  if (!product || !isHalfSelectionValid(halves)) return;
+  const current = state.cart[id] || { qty: 0, note: '' };
+  state.cart[id] = buildCartEntry(current, Math.min(999, Math.max(1, Number(quantity) || 1)));
+  state.cart[id].halves = [...halves];
+  saveCart();
+  renderCart();
+  renderMenu();
+  showToast(`✓ ${product.name} actualizada`);
+}
+
 function setCartQty(id, quantity) {
   const product = state.menu.find((item) => String(item.id) === String(id));
   if (!product) return;
   const minQty = Math.max(1, Number(product.minQty || 1));
   const current = state.cart[id] || { qty: 0, note: '' };
-  state.cart[id] = {
-    qty: Math.min(999, Math.max(minQty, Number(quantity || minQty))),
-    note: current.note || ''
-  };
+  if (!requireChosenHalves(product, current)) return;
+  state.cart[id] = buildCartEntry(current, Math.min(999, Math.max(minQty, Number(quantity || minQty))));
   saveCart();
   renderCart();
   renderMenu();
@@ -932,11 +1129,12 @@ function addToCart(id, quantity = 1) {
 
   const minQty = Math.max(1, Number(product.minQty || 1));
   const current = state.cart[id] || { qty: 0, note: '' };
+  if (!requireChosenHalves(product, current)) return;
   const nextQty = current.qty === 0
     ? Math.max(minQty, Number(quantity || 1))
     : Number(current.qty) + Number(quantity || 1);
 
-  state.cart[id] = { qty: Math.min(999, nextQty), note: current.note || '' };
+  state.cart[id] = buildCartEntry(current, Math.min(999, nextQty));
   saveCart();
   renderCart();
   renderMenu();
@@ -973,18 +1171,31 @@ function clearCart() {
   renderMenu();
 }
 
+function cartUnitPrice(entry) {
+  return Number.isFinite(entry.unitPrice) ? entry.unitPrice : getUnitPrice(entry.product, entry.qty);
+}
+
 function getCartEntries() {
   const entries = [];
   Object.entries(state.cart).forEach(([id, value]) => {
     const product = state.menu.find((item) => String(item.id) === String(id));
     const qty = Math.max(0, parseInt(value?.qty, 10) || 0);
     if (!product || qty <= 0) return;
+
+    const isHalf = isHalfHalfProduct(product);
+    const halves = Array.isArray(value?.halves) ? value.halves : [];
+    if (isHalf && !isHalfSelectionValid(halves)) return;
+
+    const unitPrice = isHalf ? getHalfUnitPrice(halves) : getUnitPrice(product, qty);
     entries.push({
       id,
       qty,
       note: String(value?.note || ''),
       product,
-      subtotal: getUnitPrice(product, qty) * qty
+      halves: isHalf ? [...halves] : [],
+      halfNote: isHalf ? halfNoteText(halves) : '',
+      unitPrice,
+      subtotal: unitPrice * qty
     });
   });
   return entries;
@@ -1139,7 +1350,8 @@ function sideCartItemHTML(entry) {
     <div class="side-item">
       <div class="side-item-info">
         <strong>${escapeHTML(product.name)}</strong>
-        <small>${formatPrice(getUnitPrice(product, entry.qty))} c/u · ${formatPrice(entry.subtotal)}</small>
+        ${entry.halfNote ? `<small>${escapeHTML(entry.halfNote)}</small>` : ''}
+        <small>${formatPrice(cartUnitPrice(entry))} c/u · ${formatPrice(entry.subtotal)}</small>
       </div>
       <div class="side-item-controls">
         <div class="qty-control qty-sm">
@@ -1167,12 +1379,13 @@ function cartItemHTML(entry) {
           <button class="cart-remove" type="button" data-cart-remove="${escapeAttr(entry.id)}"
             aria-label="Quitar ${escapeAttr(product.name)}">✕</button>
         </div>
-        <div class="cart-item-price">${formatPrice(getUnitPrice(product, entry.qty))} c/u · ${formatPrice(entry.subtotal)}</div>
+        <div class="cart-item-price">${formatPrice(cartUnitPrice(entry))} c/u · ${formatPrice(entry.subtotal)}</div>
         <div class="qty-control">
           <button type="button" data-cart-minus="${escapeAttr(entry.id)}" aria-label="Restar">−</button>
           <span>${entry.qty}</span>
           <button type="button" data-cart-plus="${escapeAttr(entry.id)}" aria-label="Sumar">+</button>
         </div>
+        ${entry.halfNote ? `<div class="cart-item-hint">${escapeHTML(entry.halfNote)}</div>` : ''}
         ${isPerPerson ? `<div class="cart-item-hint">Total para ${entry.qty} ${entry.qty === 1 ? 'persona' : 'personas'}</div>` : ''}
         <input class="cart-item-note" type="text" data-note-id="${escapeAttr(entry.id)}"
           value="${escapeAttr(entry.note)}" maxlength="120" placeholder="Nota para este producto (opcional)">
@@ -1277,9 +1490,10 @@ async function submitOrder(event) {
       name: entry.product.name,
       unit: productUnit(entry.product),
       qty: entry.qty,
-      price: getUnitPrice(entry.product, entry.qty),
+      price: cartUnitPrice(entry),
       subtotal: entry.subtotal,
-      note: entry.note
+      note: [entry.halfNote, entry.note].filter(Boolean).join(' · '),
+      ...(entry.halves.length ? { halves: entry.halves } : {})
     })),
     subtotal: totals.subtotal,
     descuento: 0,
@@ -1506,7 +1720,8 @@ function buildCartWhatsAppLink() {
 
   entries.forEach((entry) => {
     lines.push(`• ${entry.qty}× ${entry.product.name} — ${formatPrice(entry.subtotal)}`);
-    if (entry.note) lines.push(`   _${entry.note}_`);
+    const nota = [entry.halfNote, entry.note].filter(Boolean).join(' · ');
+    if (nota) lines.push(`   _${nota}_`);
   });
 
   lines.push('');
@@ -1566,6 +1781,9 @@ async function loadFromSupabase() {
         .filter((product) => product.category_slug !== 'eventos' && !String(product.code || '').startsWith('TAM-EV-'))
         .map(mapSupabaseProduct)
         .filter((product) => !isEventProduct(product));
+      if (!nextMenu.some((product) => String(product.id) === HALF_HALF_PRODUCT.id)) {
+        nextMenu.push(clone(HALF_HALF_PRODUCT));
+      }
       migrateCartByName(previousMenu, nextMenu);
       state.menu = nextMenu;
       dropEventItemsFromCart();
